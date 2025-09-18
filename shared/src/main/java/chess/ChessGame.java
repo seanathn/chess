@@ -10,15 +10,19 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private TeamColor teamColor;
+    private ChessBoard board;
 
+    public ChessGame() {
+        teamColor = TeamColor.WHITE;
+        board = new ChessBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return teamColor;
     }
 
     /**
@@ -27,7 +31,12 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        /*if (team == TeamColor.WHITE) {
+            teamColor = TeamColor.BLACK;
+        } else {
+            teamColor = TeamColor.WHITE;
+        }*/
+        teamColor = team;
     }
 
     /**
@@ -56,7 +65,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if (validMoves(move.getStartPosition()).contains(move)) {
+            board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+            board.addPiece(move.getStartPosition(), null);
+        }
+        throw new InvalidMoveException("Move not valid");
     }
 
     /**
@@ -87,7 +100,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        } else {
+            throw new RuntimeException("Not implemented");
+        }
     }
 
     /**
@@ -96,7 +113,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
