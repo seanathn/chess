@@ -62,6 +62,6 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return String.format("[%d,%d]-%s", startPosition.getRow(), endPosition.getRow(),  promotionPiece);
+        return String.format("start:[%d,%d]; end:[%d,%d]-%s", startPosition.getRow(), startPosition.getColumn(), endPosition.getRow(), endPosition.getColumn(),  promotionPiece);
     }
 }
