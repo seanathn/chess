@@ -69,51 +69,8 @@ public class ChessPiece {
 
     private Collection<ChessMove> pawnRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        int i;
-        // offset for row depending on team color
-        if (piece.pieceColor == ChessGame.TeamColor.BLACK) {
-            i = -1;
-        } else {
-            i = 1;
-        }
-
-        // Check if space in front is empty
-        if (board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn())) == null) {
-
-        } else if(board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - 1)) != null) {
-            if (board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - 1)).getTeamColor() != piece.getTeamColor()) {
 
 
-                // can capture to the left
-            }
-
-        } else if(board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + 1)) != null) {
-            if (board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + 1)).getTeamColor() != piece.getTeamColor()) {
-
-
-                //can capture to the right
-            }
-        }
-
-
-
-//        if (myPosition.getRow() == 2 && piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-//            // Check if path is clear
-//            if (board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn())) == null) {
-//                possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), null));
-//                if (board.getPiece(new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn())) == null) {
-//                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn()), null));
-//                }
-//            }
-//        } else if (myPosition.getRow() == 7 && piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-//            // Check if path is clear
-//            if (board.getPiece(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn())) == null) {
-//                possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), null));
-//                if (board.getPiece(new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn())) == null) {
-//                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn()), null));
-//                }
-//            }
-//        }
 
         return possibleMoves;
     }
@@ -129,6 +86,13 @@ public class ChessPiece {
 
     private boolean isEmpty(int x, int y, ChessBoard board) {
         return board.getPiece(new ChessPosition(x, y)) == null;
+    }
+
+    private boolean isSameTeam(ChessBoard board, ChessPosition myPosition, int x, int y) {
+        if (board.getPiece(new ChessPosition(x, y)) != null) {
+            return board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn())).getTeamColor() == board.getPiece(new ChessPosition(x, y)).getTeamColor();
+        }
+        return false;
     }
 
 
@@ -163,9 +127,9 @@ public class ChessPiece {
 
     private Collection<ChessMove> kingRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
 
-
-        return possibleMoves;
+        return getChessMoves(board, myPosition, possibleMoves, directions);
     }
 
     private Collection<ChessMove> queenRules(ChessBoard board, ChessPosition myPosition) {
@@ -175,7 +139,21 @@ public class ChessPiece {
 
     private Collection<ChessMove>  knightRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        int[][] offsets = {
+                {2,1}, {1,2}, {-1,2}, {-2,1},
+                {-2,-1}, {-1,-2}, {1,-2}, {2,-1}
+        };
 
+        return getChessMoves(board, myPosition, possibleMoves, offsets);
+    }
+
+    private Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> possibleMoves, int[][] offsets) {
+        for (int[] offset : offsets) {
+            int nx = myPosition.getRow() + offset[0], ny = myPosition.getColumn() + offset[1];
+            if (inBounds(nx, ny) && !isSameTeam(board, myPosition, nx, ny)) {
+                possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
+            }
+        }
 
         return possibleMoves;
     }
