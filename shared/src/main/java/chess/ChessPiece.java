@@ -115,6 +115,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> bishopRules(ChessBoard board, ChessPosition myPosition) {
+        // directions a piece can move in, does allow the continuation of the direction
         int[][] direction = new int[][]{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
         return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
     }
