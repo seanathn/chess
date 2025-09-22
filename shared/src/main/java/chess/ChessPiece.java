@@ -92,8 +92,10 @@ public class ChessPiece {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
         for (int[] dir : directions) {
-            int dx = dir[0], dy = dir[1];
-            int nx = x + dx, ny = y + dy;
+            int dx = dir[0];
+            int dy = dir[1];
+            int nx = x + dx;
+            int ny = y + dy;
 
             while (inBounds(nx, ny)) {
                 if (isEmpty(nx, ny, board)) {
@@ -141,7 +143,8 @@ public class ChessPiece {
 
     private Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> possibleMoves, int[][] offsets) {
         for (int[] offset : offsets) {
-            int nx = myPosition.getRow() + offset[0], ny = myPosition.getColumn() + offset[1];
+            int nx = myPosition.getRow() + offset[0];
+            int ny = myPosition.getColumn() + offset[1];
             if (inBounds(nx, ny) && isSameTeam(board, myPosition, nx, ny)) {
                 possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
             }
@@ -156,7 +159,8 @@ public class ChessPiece {
 
     private void pawnCapture(ChessBoard board, ChessPosition myPosition, int direction, int endRow, ArrayList<ChessMove> possibleMoves) {
         for (int dy = -1; dy <= 1; dy += 2) {
-            int nx = myPosition.getRow() + direction, ny = myPosition.getColumn() + dy;
+            int nx = myPosition.getRow() + direction;
+            int ny = myPosition.getColumn() + dy;
             if (inBounds(nx, ny) && !isEmpty(nx,ny,board) && isSameTeam(board, myPosition, nx, ny)) {
 
                 if (myPosition.getRow() == endRow) {
