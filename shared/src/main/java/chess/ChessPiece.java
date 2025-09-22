@@ -92,8 +92,11 @@ public class ChessPiece {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
         for (int[] dir : directions) {
+            // sets up the piece to move in the correct direction
             int dx = dir[0];
             int dy = dir[1];
+
+            // initial location once the first directional change
             int nx = x + dx;
             int ny = y + dy;
 
@@ -106,6 +109,8 @@ public class ChessPiece {
                 } else {
                     break;
                 }
+
+                // changes the location but still following the direction until the end or a block
                 nx += dx;
                 ny += dy;
             }
