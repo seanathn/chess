@@ -82,9 +82,9 @@ public class ChessPiece {
 
     private boolean isSameTeam(ChessBoard board, ChessPosition myPosition, int x, int y) {
         if (board.getPiece(new ChessPosition(x, y)) != null) {
-            return board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn())).getTeamColor() == board.getPiece(new ChessPosition(x, y)).getTeamColor();
+            return board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn())).getTeamColor() != board.getPiece(new ChessPosition(x, y)).getTeamColor();
         }
-        return false;
+        return true;
     }
 
 
@@ -142,7 +142,7 @@ public class ChessPiece {
     private Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> possibleMoves, int[][] offsets) {
         for (int[] offset : offsets) {
             int nx = myPosition.getRow() + offset[0], ny = myPosition.getColumn() + offset[1];
-            if (inBounds(nx, ny) && !isSameTeam(board, myPosition, nx, ny)) {
+            if (inBounds(nx, ny) && isSameTeam(board, myPosition, nx, ny)) {
                 possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
             }
         }
@@ -152,6 +152,27 @@ public class ChessPiece {
 
     private ChessMove pawnPromotion(ChessPosition myPosition, int direction, PieceType pieceType, int y) {
         return new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + direction, y), pieceType);
+    }
+
+    private void pawnCapture(ChessBoard board, ChessPosition myPosition, int direction, int endRow, ArrayList<ChessMove> possibleMoves) {
+        for (int dy = -1; dy <= 1; dy += 2) {
+            int nx = myPosition.getRow() + direction, ny = myPosition.getColumn() + dy;
+            if (inBounds(nx, ny) && !isEmpty(nx,ny,board) && isSameTeam(board, myPosition, nx, ny)) {
+
+                if (myPosition.getRow() == endRow) {
+                    PieceType[] promotionOptions = PieceType.values();
+                    for (PieceType promotion : promotionOptions) {
+                        if (promotion != PieceType.PAWN && promotion != PieceType.KING) {
+                            possibleMoves.add(pawnPromotion(new ChessPosition(myPosition.getRow(),myPosition.getColumn()), direction, promotion, ny));
+                        }
+                    }
+
+
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
+                }
+            }
+        }
     }
 
     private Collection<ChessMove> pawnRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
@@ -179,24 +200,7 @@ public class ChessPiece {
 
         }
 
-        for (int dy = -1; dy <= 1; dy += 2) {
-            int nx = myPosition.getRow() + direction, ny = myPosition.getColumn() + dy;
-            if (inBounds(nx, ny) && !isEmpty(nx,ny,board) && !isSameTeam(board, myPosition, nx, ny)) {
-
-                if (myPosition.getRow() == endRow) {
-                    PieceType[] promotionOptions = PieceType.values();
-                    for (PieceType promotion : promotionOptions) {
-                        if (promotion != PieceType.PAWN && promotion != PieceType.KING) {
-                            possibleMoves.add(pawnPromotion(new ChessPosition(myPosition.getRow(),myPosition.getColumn()), direction, promotion, ny));
-                        }
-                    }
-
-
-                } else {
-                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
-                }
-            }
-        }
+        pawnCapture(board, myPosition, direction, endRow, possibleMoves);
 
 
         return possibleMoves;
