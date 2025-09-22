@@ -58,21 +58,13 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
 
         return switch (piece.getPieceType()) {
-            case KING -> kingRules(board, myPosition, piece);
+            case KING -> kingRules(board, myPosition);
             case QUEEN -> queenRules(board, myPosition);
             case BISHOP -> bishopRules(board, myPosition);
             case ROOK -> rookRules(board, myPosition);
-            case KNIGHT -> knightRules(board, myPosition, piece);
+            case KNIGHT -> knightRules(board, myPosition);
             case PAWN -> pawnRules(board, myPosition, piece);
         };
-    }
-
-    private Collection<ChessMove> pawnRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-
-
-
-        return possibleMoves;
     }
 
     private Collection<ChessMove> bishopRules(ChessBoard board, ChessPosition myPosition) {
@@ -125,7 +117,7 @@ public class ChessPiece {
         return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
     }
 
-    private Collection<ChessMove> kingRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> kingRules(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
 
@@ -137,7 +129,7 @@ public class ChessPiece {
         return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
     }
 
-    private Collection<ChessMove>  knightRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove>  knightRules(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         int[][] offsets = {
                 {2,1}, {1,2}, {-1,2}, {-2,1},
@@ -154,6 +146,58 @@ public class ChessPiece {
                 possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
             }
         }
+
+        return possibleMoves;
+    }
+
+    private ChessMove pawnPromotion(ChessPosition myPosition, int direction, PieceType pieceType, int y) {
+        return new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + direction, y), pieceType);
+    }
+
+    private Collection<ChessMove> pawnRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        int direction = piece.getTeamColor().equals(ChessGame.TeamColor.BLACK) ? -1 : 1;
+        int startRow = piece.getTeamColor().equals(ChessGame.TeamColor.BLACK) ? 7 : 2;
+        int endRow =  piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ? 7 : 2;
+
+        if (isEmpty(myPosition.getRow()  + direction, myPosition.getColumn(), board)) {
+
+            if (myPosition.getRow() == endRow) {
+                PieceType[] promotionOptions = PieceType.values();
+                for (PieceType promotion : promotionOptions) {
+                    if (promotion != PieceType.PAWN && promotion != PieceType.KING) {
+                        possibleMoves.add(pawnPromotion(myPosition, direction, promotion, myPosition.getColumn()));
+                    }
+                }
+
+            } else {
+                possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn()), null));
+                if (myPosition.getRow() == startRow && isEmpty(myPosition.getRow() + 2 * direction, myPosition.getColumn(), board)) {
+                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 2 * direction, myPosition.getColumn() ), null));
+                }
+            }
+
+        }
+
+        for (int dy = -1; dy <= 1; dy += 2) {
+            int nx = myPosition.getRow() + direction, ny = myPosition.getColumn() + dy;
+            if (inBounds(nx, ny) && !isEmpty(nx,ny,board) && !isSameTeam(board, myPosition, nx, ny)) {
+
+                if (myPosition.getRow() == endRow) {
+                    PieceType[] promotionOptions = PieceType.values();
+                    for (PieceType promotion : promotionOptions) {
+                        if (promotion != PieceType.PAWN && promotion != PieceType.KING) {
+                            possibleMoves.add(pawnPromotion(new ChessPosition(myPosition.getRow(),myPosition.getColumn()), direction, promotion, ny));
+                        }
+                    }
+
+
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(nx, ny), null));
+                }
+            }
+        }
+
 
         return possibleMoves;
     }
