@@ -14,8 +14,7 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private boolean upRightBlock = false;
-    private boolean upLeftBlock = false;
+
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
@@ -58,30 +57,14 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
 
-        switch (piece.getPieceType()) {
-            case KING:
-                return kingRules(board, myPosition, piece);
-            case QUEEN:
-                return queenRules(board, myPosition, piece);
-            case BISHOP:
-                return bishopRules(board, myPosition, piece);
-            case ROOK:
-                return rookRules(board, myPosition, piece);
-            case KNIGHT:
-                return knightRules(board, myPosition, piece);
-            case PAWN:
-                return pawnRules(board, myPosition, piece);
-        }
-
-
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            return bishopRules(board, myPosition, piece);
-        } else if (piece.getPieceType() == PieceType.PAWN) {
-            return pawnRules(board, myPosition, piece);
-        } else
-
-
-        return List.of();
+        return switch (piece.getPieceType()) {
+            case KING -> kingRules(board, myPosition, piece);
+            case QUEEN -> queenRules(board, myPosition);
+            case BISHOP -> bishopRules(board, myPosition);
+            case ROOK -> rookRules(board, myPosition);
+            case KNIGHT -> knightRules(board, myPosition, piece);
+            case PAWN -> pawnRules(board, myPosition, piece);
+        };
     }
 
     private Collection<ChessMove> pawnRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
@@ -135,93 +118,48 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    private Collection<ChessMove> bishopRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> bishopRules(ChessBoard board, ChessPosition myPosition) {
+        int [][] direction = new int[][] {{1,1}, {-1,1}, {1,-1}, {-1,-1}};
+        return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
+    }
+
+    private boolean inBounds(int x, int y) {
+        return x > 0 && x <= 8 && y > 0 && y <= 8;
+    }
+
+    private boolean isEmpty(int x, int y, ChessBoard board) {
+        return board.getPiece(new ChessPosition(x, y)) == null;
+    }
+
+
+    private ArrayList<ChessMove> getSlidingMoves(int x, int y, int[][] directions, ChessBoard board) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
+        for (int[] dir : directions) {
+            int dx = dir[0], dy = dir[1];
+            int nx = x + dx, ny = y + dy;
 
-        for (int x = 1; x <= 8; x++) {
-            if (upLeftBlock && x < myPosition.getRow()) {
-                x = myPosition.getRow();
-            }
-            for (int y = 1; y <= 8; y++) {
-                if (upLeftBlock && y < myPosition.getColumn()) {
-                    y = myPosition.getColumn();
-                }
-                if (upRightBlock && y > myPosition.getColumn()) {
+            while (inBounds(nx, ny)) {
+                if (isEmpty(nx, ny, board)) {
+                    possibleMoves.add(new ChessMove(new ChessPosition(x,y), new ChessPosition(nx, ny), null));
+                } else if (board.getPiece(new ChessPosition(x,y)).getTeamColor() != board.getPiece(new ChessPosition(nx,ny)).getTeamColor()) {
+                    possibleMoves.add(new ChessMove(new ChessPosition(x,y), new ChessPosition(nx, ny), null));
+                    break;
+                } else {
                     break;
                 }
-                   possibleMoves = addDiag(board, myPosition, x, y, possibleMoves, piece);
-                }
-            }
-        return possibleMoves;
-    }
-
-    private boolean isDiag(int x, int y, ChessPosition myPosition) {
-        int posX = myPosition.getRow();
-        int posY = myPosition.getColumn();
-        if (x == posX && y == posY) {
-            return false;
-        }
-        return Math.abs(posX - x) == Math.abs(posY - y);
-    }
-
-    private ArrayList<ChessMove> addDiag(ChessBoard board, ChessPosition myPosition, int x, int y, ArrayList<ChessMove> possibleMoves, ChessPiece piece) {
-        if (isDiag(x, y, myPosition)) {
-            if (board.getPiece(new ChessPosition(x, y)) == null) {
-                possibleMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
-            } else {
-                if (x < myPosition.getRow() && y < myPosition.getColumn()) {
-                    Iterator<ChessMove> iter = possibleMoves.iterator();
-
-                    while (iter.hasNext()) {
-                        ChessMove move = iter.next();
-
-                        if (move.getEndPosition().getRow() < x && move.getEndPosition().getColumn() < y) {
-                            iter.remove();
-                        }
-                    }
-                } else if (x > myPosition.getRow() && y > myPosition.getColumn()) {
-                    upRightBlock = true;
-                } else if (x < myPosition.getRow() && y > myPosition.getColumn()) {
-                    Iterator<ChessMove> iter = possibleMoves.iterator();
-
-                    while (iter.hasNext()) {
-                        ChessMove move = iter.next();
-
-                        if (move.getEndPosition().getRow() < x && move.getEndPosition().getColumn() > y) {
-                            iter.remove();
-                        }
-                    }
-                } else if (x > myPosition.getRow() && y < myPosition.getColumn()) {
-                    upLeftBlock = true;
-                }
-                if (board.getPiece(new ChessPosition(x, y)).getTeamColor() != piece.getTeamColor()) {
-                    possibleMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
-                }
-            }
-        }
-        return possibleMoves;
-    }
-
-
-    private Collection<ChessMove> rookRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        for (int x = 1; x <= 8; x++) {
-            for (int y = 1; y <= 8; y++) {
-                if (x != myPosition.getRow() || y != myPosition.getColumn()) {
-                    if (x == myPosition.getRow()) {
-                        possibleMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
-                    }
-                    if (y == myPosition.getColumn()) {
-                        possibleMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
-                    }
-                }
+                nx += dx;
+                ny += dy;
             }
         }
 
         return possibleMoves;
     }
 
+    private Collection<ChessMove> rookRules(ChessBoard board, ChessPosition myPosition) {
+        int [][] direction = new int[][] {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
+    }
 
     private Collection<ChessMove> kingRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
@@ -230,14 +168,10 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-
-    private Collection<ChessMove> queenRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-
-
-        return possibleMoves;
+    private Collection<ChessMove> queenRules(ChessBoard board, ChessPosition myPosition) {
+        int [][] direction = new int[][] {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,1}, {1,-1}, {-1,-1}};
+        return getSlidingMoves(myPosition.getRow(), myPosition.getColumn(), direction, board);
     }
-
 
     private Collection<ChessMove>  knightRules(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
