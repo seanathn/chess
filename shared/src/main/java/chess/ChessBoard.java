@@ -87,7 +87,7 @@ public class ChessBoard {
         ChessBoard board = new ChessBoard();
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
-                board.addPiece(new ChessPosition(i,j), boardArray[8-i][j-1]);
+                board.addPiece(new ChessPosition(i,j), getPiece(new ChessPosition(i,j)));
             }
         }
         return board;

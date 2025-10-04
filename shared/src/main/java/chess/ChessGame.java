@@ -43,6 +43,11 @@ public class ChessGame {
         BLACK
     }
 
+    private void movePiece(ChessMove move, ChessBoard board) {
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.addPiece(move.getStartPosition(), null);
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -58,7 +63,10 @@ public class ChessGame {
 
         ChessBoard tempBoard = board.copyBoard();
         for (ChessMove move : moves) {
-
+            movePiece(move, tempBoard);
+            if (isInCheck(teamColor, tempBoard)) {
+                movePiece(move, board);
+            }
         }
 
         return moves;
@@ -72,8 +80,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (validMoves(move.getStartPosition()).contains(move)) {
-            board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-            board.addPiece(move.getStartPosition(), null);
+            movePiece(move, board);
         }
         throw new InvalidMoveException("Move not valid");
     }
@@ -85,6 +92,26 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+//        ChessPosition kingPos = findKing(teamColor);
+//
+//        for (int x = 1; x <= 8; x++) {
+//            for (int y = 1; y <= 8; y++) {
+//                ChessPosition currentPos = new ChessPosition(x, y);
+//                ChessPiece piece = board.getPiece(currentPos);
+//                if (piece != null) {
+//                    if (piece.getTeamColor() != teamColor) {
+//                        if (piece.pieceMoves(board, currentPos).contains(new ChessMove(currentPos, kingPos, null))) {
+//                            return true;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+        return isInCheck(teamColor, board);
+    }
+
+    private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPos = findKing(teamColor);
 
         for (int x = 1; x <= 8; x++) {
