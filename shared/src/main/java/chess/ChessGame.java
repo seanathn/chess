@@ -108,12 +108,12 @@ public class ChessGame {
         return null;
     }
 
-    private boolean hasAValidMove(TeamColor teamColor) {
+    private boolean hasNoValidMove(TeamColor teamColor) {
         for (int x = 1; x <= 8; x++) {
             for (int y = 1; y <= 8; y++) {
                 if (board.getPiece(new ChessPosition(x, y)) != null) {
                     if  (teamColor == board.getPiece(new ChessPosition(x, y)).getTeamColor()) {
-                        if (validMoves(new ChessPosition(x, y)) == null) {
+                        if (validMoves(new ChessPosition(x, y)).isEmpty()) {
                             return true;
                         }
                     }
@@ -131,10 +131,8 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            for (int x = 1; x <= 8; x++) {
-                for (int y = 1; y <= 8; y++) {
-
-                }
+            if (hasNoValidMove(teamColor)) {
+                return false;
             }
         }
         return false;
@@ -151,7 +149,7 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         } else {
-            return hasAValidMove(teamColor);
+            return hasNoValidMove(teamColor);
         }
     }
 
