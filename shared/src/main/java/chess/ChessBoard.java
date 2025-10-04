@@ -83,6 +83,17 @@ public class ChessBoard {
         }
     }
 
+    public ChessBoard copyBoard() {
+        ChessBoard board = new ChessBoard();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                board.addPiece(new ChessPosition(i,j), boardArray[8-i][j-1]);
+            }
+        }
+        return board;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
