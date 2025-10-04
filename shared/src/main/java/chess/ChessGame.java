@@ -104,6 +104,8 @@ public class ChessGame {
                 }
             }
         }
+        // won't be reached
+        return null;
     }
 
     /**
