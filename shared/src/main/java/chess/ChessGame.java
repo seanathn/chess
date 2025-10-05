@@ -61,17 +61,26 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null) {
             return null;
         }
-        ArrayList<ChessMove> moves = new ArrayList<ChessMove>(board.getPiece(startPosition).pieceMoves(board, startPosition));
+        ArrayList<ChessMove> moves = new ArrayList<>(board.getPiece(startPosition).pieceMoves(board, startPosition));
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
 
-        ChessBoard tempBoard = board.copyBoard();
         for (ChessMove move : moves) {
-            movePiece(move, tempBoard);
-            if (isInCheck(teamColor, tempBoard)) {
-                moves.remove(move);
+            ChessMove reverseMove = new ChessMove(move.getEndPosition(), move.getStartPosition(), move.getPromotionPiece());
+            ChessPiece tempPiece = null;
+            if (board.getPiece(move.getEndPosition()) != null) {
+                tempPiece = board.getPiece(move.getEndPosition());
+            }
+            movePiece(move, board);
+            if (!isInCheck(teamColor)) {
+                validMoves.add(move);
+            }
+            movePiece(reverseMove, board);
+            if (tempPiece != null) {
+                board.addPiece(move.getEndPosition(), tempPiece);
             }
         }
 
-        return moves;
+        return validMoves;
     }
 
     /**
@@ -98,26 +107,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-//        ChessPosition kingPos = findKing(teamColor);
-//
-//        for (int x = 1; x <= 8; x++) {
-//            for (int y = 1; y <= 8; y++) {
-//                ChessPosition currentPos = new ChessPosition(x, y);
-//                ChessPiece piece = board.getPiece(currentPos);
-//                if (piece != null) {
-//                    if (piece.getTeamColor() != teamColor) {
-//                        if (piece.pieceMoves(board, currentPos).contains(new ChessMove(currentPos, kingPos, null))) {
-//                            return true;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-        return isInCheck(teamColor, board);
-    }
-
-    private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPos = findKing(teamColor);
 
         for (int x = 1; x <= 8; x++) {
@@ -177,11 +166,9 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            if (hasNoValidMove(teamColor)) {
-                return false;
+        if (isInCheck(teamColor) && hasNoValidMove(teamColor)) {
+                return true;
             }
-        }
         return false;
     }
 
