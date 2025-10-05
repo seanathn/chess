@@ -137,7 +137,7 @@ public class ChessGame {
                 ChessPiece piece = board.getPiece(currentPos);
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor) {
-                        if (piece.pieceMoves(board, currentPos).contains(new ChessMove(currentPos, kingPos, null))) {
+                        if (piece.pieceMoves(board, currentPos).contains(new ChessMove(currentPos, kingPos, null)) || piece.pieceMoves(board, currentPos).contains(new ChessMove(currentPos, kingPos, ChessPiece.PieceType.QUEEN))) {
                             return true;
                         }
                     }
@@ -188,10 +188,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor) && hasNoValidMove(teamColor)) {
-                return true;
-            }
-        return false;
+        return isInCheck(teamColor) && hasNoValidMove(teamColor);
     }
 
     /**
