@@ -141,11 +141,14 @@ public class ChessGame {
         for (int x = 1; x <= 8; x++) {
             for (int y = 1; y <= 8; y++) {
                 ChessPosition position = new ChessPosition(x, y);
-                if (board.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) {
-                    if (teamColor == board.getPiece(position).getTeamColor()) {
-                        return position;
+                if (board.getPiece(position) != null) {
+                    if (board.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) {
+                        if (teamColor == board.getPiece(position).getTeamColor()) {
+                            return position;
+                        }
                     }
                 }
+
             }
         }
         // won't be reached
