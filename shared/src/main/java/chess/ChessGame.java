@@ -104,13 +104,14 @@ public class ChessGame {
         if (board.getPiece(move.getStartPosition()) == null) {
             throw new InvalidMoveException("Move not valid");
         }
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         if (teamColor != board.getPiece(move.getStartPosition()).getTeamColor()) {
             throw new InvalidMoveException("Move not valid");
         }
-        if (validMoves(move.getStartPosition()) == null) {
+        if (validMoves == null) {
             throw new InvalidMoveException("Move not valid");
         }
-        if (validMoves(move.getStartPosition()).contains(move)) {
+        if (validMoves.contains(move)) {
             movePiece(move, board);
         } else {
             throw new InvalidMoveException("Move not valid");
