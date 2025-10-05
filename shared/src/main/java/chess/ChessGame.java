@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -17,6 +18,7 @@ public class ChessGame {
     public ChessGame() {
         teamColor = TeamColor.WHITE;
         board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -65,7 +67,7 @@ public class ChessGame {
         for (ChessMove move : moves) {
             movePiece(move, tempBoard);
             if (isInCheck(teamColor, tempBoard)) {
-                movePiece(move, board);
+                moves.remove(move);
             }
         }
 
@@ -79,10 +81,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (validMoves(move.getStartPosition()) == null) {
+            throw new InvalidMoveException("Invalid move.");
+        }
         if (validMoves(move.getStartPosition()).contains(move)) {
             movePiece(move, board);
+        } else {
+            throw new InvalidMoveException("Move not valid");
         }
-        throw new InvalidMoveException("Move not valid");
     }
 
     /**
@@ -207,5 +213,19 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamColor == chessGame.teamColor && board.equals(chessGame.getBoard());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamColor, getBoard());
     }
 }
