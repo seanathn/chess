@@ -63,11 +63,12 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 //        teamColor = board.getPiece(startPosition).getTeamColor();
+        ChessPiece startPiece = board.getPiece(startPosition);
 
-        if (board.getPiece(startPosition) == null) {
+        if (startPiece == null) {
             return null;
         }
-        ArrayList<ChessMove> moves = new ArrayList<>(board.getPiece(startPosition).pieceMoves(board, startPosition));
+        ArrayList<ChessMove> moves = new ArrayList<>(startPiece.pieceMoves(board, startPosition));
         ArrayList<ChessMove> validMoves = new ArrayList<>();
 
         for (ChessMove move : moves) {
@@ -82,7 +83,7 @@ public class ChessGame {
                 tempPiece = board.getPiece(move.getEndPosition());
             }
             movePiece(move, board);
-            if (!isInCheck(teamColor)) {
+            if (!isInCheck(startPiece.getTeamColor())) {
                 validMoves.add(move);
             }
             movePiece(reverseMove, board);
