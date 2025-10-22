@@ -82,7 +82,6 @@ public class ValidMovesTests {
                     | |k| | | | | | |
                     | | | | | | | | |
                     """));
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         ChessPosition position = new ChessPosition(4, 4);
         Assertions.assertTrue(game.validMoves(position).isEmpty(), TRAPPED_PIECE_MOVES);
