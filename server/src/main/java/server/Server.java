@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.ClearService;
@@ -18,9 +19,15 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        userService = new UserService();
-        clearService = new ClearService();
-        gameService = new GameService();
+        // this may be incorrect because I am making new Memory Data points, and they may not be connected
+        this(new UserService(new MemoryDataAccess()), new ClearService(new MemoryDataAccess()),
+                new GameService(new MemoryDataAccess()));
+    }
+
+    public Server(UserService userService, ClearService clearService, GameService gameService) {
+        this.userService = userService;
+        this.clearService = clearService;
+        this.gameService = gameService;
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))

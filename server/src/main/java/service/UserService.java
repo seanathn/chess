@@ -6,6 +6,10 @@ public class UserService {
 
     DataAccess dataAccess;
 
+    public UserService(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+    }
+
 //
 //    public RegisterResult register(RegisterRequest registerRequest) {
 //

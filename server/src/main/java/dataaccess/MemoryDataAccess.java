@@ -19,7 +19,7 @@ public class MemoryDataAccess implements DataAccess {
     private final Map<String, AuthData> authTokens = new ConcurrentHashMap<>();
 
 
-    private MemoryDataAccess() {}
+//    public MemoryDataAccess() {}
 
     @Override
     public void clear() {
