@@ -3,18 +3,20 @@ package server;
 import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
-import org.jetbrains.annotations.NotNull;
+import service.ChessService;
 
 import java.util.UUID;
 
 public class Server {
 
-    private final ChessService service;
+//    private final ChessService service;
 //    private final WebSocketHandler webSocketHandler;
     private final Javalin javalin;
 
     public Server() {
+//        this.service = service;
+
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::deleteAllData)
                 .post("/user", this::registerUser)
@@ -41,6 +43,34 @@ public class Server {
 //                    ws.onMessage(webSocketHandler);
 //                    ws.onClose(webSocketHandler);
 //                });
+
+    }
+
+    private void deleteAllData(Context ctx) {
+
+    }
+
+    private void registerUser(Context ctx) {
+
+    }
+
+    private void loginUser(Context ctx) {
+
+    }
+
+    private void logoutUser(Context ctx) {
+
+    }
+
+    private void getGamesList(Context ctx) {
+
+    }
+
+    private void createGame(Context ctx) {
+
+    }
+
+    private void joinGame(Context ctx) {
 
     }
 
