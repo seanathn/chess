@@ -1,12 +1,19 @@
 package service;
 
 import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
 
 import java.security.Provider;
 
 public class ClearService {
 
-    public void clear() {
+    private DataAccess dataAccess;
 
+//    public ClearService(DataAccess dataAccess) {
+//        this.dataAccess = dataAccess;
+//    }
+
+    public void clear() throws DataAccessException {
+        dataAccess.clear();
     }
 }

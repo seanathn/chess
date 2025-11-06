@@ -3,18 +3,24 @@ package server;
 import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
+import service.ClearService;
+import service.GameService;
 import service.UserService;
 
 import java.util.UUID;
 
 public class Server {
 
-    private final UserService service;
+    private final UserService userService;
+    private final ClearService clearService;
+    private final GameService gameService;
 //    private final WebSocketHandler webSocketHandler;
     private final Javalin javalin;
 
-    public Server(UserService service) {
-        this.service = service;
+    public Server() {
+        userService = new UserService();
+        clearService = new ClearService();
+        gameService = new GameService();
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -37,32 +43,32 @@ public class Server {
 
     }
 
-    private void deleteAllData(Context ctx) {
-
+    private void deleteAllData(Context ctx) throws DataAccessException {
+        clearService.clear();
     }
 
     private void registerUser(Context ctx) {
-
+//        userService.register();
     }
 
     private void loginUser(Context ctx) {
-
+//        userService.login();
     }
 
     private void logoutUser(Context ctx) {
-
+//        userService.logout();
     }
 
     private void getGamesList(Context ctx) {
-
+//        gameService.getGames();
     }
 
     private void createGame(Context ctx) {
-
+//        gameService.createGame();
     }
 
     private void joinGame(Context ctx) {
-
+//        gameService.joinGame();
     }
 
     private void exceptionHandler(DataAccessException ex, Context ctx) {
