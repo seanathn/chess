@@ -5,6 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
+import model.request.LoginRequest;
+import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.response.RegisterResult;
 import service.ClearService;
@@ -60,18 +62,31 @@ public class Server {
     private void registerUser(Context ctx) {
         RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         try {
-            userService.register(registerRequest);
+            ctx.result(new Gson().toJson(userService.register(registerRequest)));
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            exceptionHandler(e, ctx);
         }
     }
 
     private void loginUser(Context ctx) {
-//        userService.login();
+        LoginRequest loginRequest = new Gson().fromJson(ctx.body(), LoginRequest.class);
+        try {
+            ctx.result(new Gson().toJson(userService.login(loginRequest)));
+
+        } catch (DataAccessException e) {
+            exceptionHandler(e, ctx);
+        }
+
     }
 
     private void logoutUser(Context ctx) {
-//        userService.logout();
+        LogoutRequest logoutRequest = new Gson().fromJson(ctx.header("authorization"), LogoutRequest.class);
+        try {
+            userService.logout(logoutRequest);
+            ctx.result();
+        } catch (DataAccessException e) {
+            exceptionHandler(e, ctx);
+        }
     }
 
     private void getGamesList(Context ctx) {
@@ -94,10 +109,6 @@ public class Server {
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
-    }
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
     }
 
     public void stop() {

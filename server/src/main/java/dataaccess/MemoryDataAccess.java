@@ -37,8 +37,11 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public UserData getUser(String username) {
-        return users.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        if (users.containsKey(username)) {
+            return users.get(username);
+        }
+        throw new DataAccessException("User not found");
     }
 
     @Override
@@ -50,8 +53,13 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public GameData getGame(int gameID) {
-        return games.get(gameID);
+    public GameData getGame(int gameID) throws DataAccessException {
+        if (games.containsKey(gameID)) {
+            return games.get(gameID);
+        }
+        else {
+            throw new DataAccessException("No game found");
+        }
     }
 
     @Override
@@ -73,12 +81,20 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public AuthData getAuth(String authToken) {
-        return authTokens.get(authToken);
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        if (authTokens.containsKey(authToken)) {
+            return authTokens.get(authToken);
+        }
+        throw new DataAccessException("Invalid auth");
     }
 
     @Override
-    public void deleteAuth(String authToken) {
-        authTokens.remove(authToken);
+    public void deleteAuth(String authToken) throws DataAccessException {
+        if (authTokens.containsKey(authToken)) {
+            authTokens.remove(authToken);
+        }
+        else {
+            throw new DataAccessException("Invalid auth");
+        }
     }
 }

@@ -1,4 +1,4 @@
 package model.response;
 
-public class LogoutResult {
+public record LogoutResult() {
 }

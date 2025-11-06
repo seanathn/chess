@@ -2,12 +2,15 @@ package service;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import model.AuthData;
 import model.UserData;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.response.LoginResult;
 import model.response.RegisterResult;
+
+import java.util.UUID;
 
 public class UserService {
 
@@ -20,20 +23,41 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
 
-        UserData user = new UserData("placeholder", "placeholder", "placeholder");
+        UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
 
         dataAccess.createUser(user);
 
-        return new RegisterResult();
+        String token = generateToken(); // may want to have it take user info
+        AuthData authData = new AuthData(token, user.username());
+
+        dataAccess.createAuth(authData);
+
+        return new RegisterResult(user.username(), token);
     }
 
-    public LoginResult login(LoginRequest loginRequest) {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
 
+        UserData user = dataAccess.getUser(loginRequest.username());
 
-        return new LoginResult();
+        if (user == null) {
+            throw new DataAccessException("User not found");
+        }
+
+        if (!user.password().equals(loginRequest.password())) {
+            throw new DataAccessException("Invalid password");
+        }
+
+        AuthData authData = new AuthData(loginRequest.username(), generateToken());
+        dataAccess.createAuth(authData);
+
+        return new LoginResult(user.username(), authData.authToken());
     }
 
-    public void logout(LogoutRequest logoutRequest) {
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        dataAccess.deleteAuth(logoutRequest.authToken());
+    }
 
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }

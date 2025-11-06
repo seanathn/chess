@@ -1,4 +1,4 @@
 package model.response;
 
-public class LoginResult {
+public record LoginResult(String username, String authToken) {
 }
