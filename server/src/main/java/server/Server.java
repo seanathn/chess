@@ -13,6 +13,7 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class Server {
@@ -57,11 +58,14 @@ public class Server {
 
     private void deleteAllData(Context ctx) throws DataAccessException {
         clearService.clear();
+        ctx.status(200);
+        ctx.result();
     }
 
     private void registerUser(Context ctx) {
         RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         try {
+            ctx.status(200);
             ctx.result(new Gson().toJson(userService.register(registerRequest)));
         } catch (DataAccessException e) {
             exceptionHandler(e, ctx);
@@ -80,7 +84,7 @@ public class Server {
     }
 
     private void logoutUser(Context ctx) {
-        LogoutRequest logoutRequest = new Gson().fromJson(ctx.header("authorization"), LogoutRequest.class);
+        LogoutRequest logoutRequest = new LogoutRequest(ctx.header("authorization"));
         try {
             userService.logout(logoutRequest);
             ctx.result();
@@ -102,8 +106,17 @@ public class Server {
     }
 
     private void exceptionHandler(DataAccessException ex, Context ctx) {
-//        ctx.status(ex.toHttpStatusCode());
-//        ctx.result(ex.toJson());
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", ex.getMessage()), "success", false));
+        if (ex.getMessage().equals("bad request")) {
+            ctx.status(400);
+        } else if (ex.getMessage().equals("unauthorized")) {
+            ctx.status(401);
+        } else if (ex.getMessage().equals("already taken")) {
+            ctx.status(403);
+        } else {
+            ctx.status(500);
+        }
+        ctx.json(body);
     }
 
     public int run(int desiredPort) {

@@ -31,7 +31,7 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void createUser(UserData user) throws DataAccessException {
         if (users.containsKey(user.username())) {
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("already taken");
         }
         users.put(user.username(), user);
     }
@@ -41,13 +41,13 @@ public class MemoryDataAccess implements DataAccess {
         if (users.containsKey(username)) {
             return users.get(username);
         }
-        throw new DataAccessException("User not found");
+        throw new DataAccessException("bad request");
     }
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
         if (games.containsKey(game.gameID())) {
-            throw new DataAccessException("Game already exists");
+            throw new DataAccessException("already taken");
         }
         games.put(game.gameID(), game);
     }
@@ -58,7 +58,7 @@ public class MemoryDataAccess implements DataAccess {
             return games.get(gameID);
         }
         else {
-            throw new DataAccessException("No game found");
+            throw new DataAccessException("bad request");
         }
     }
 
@@ -75,7 +75,7 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
         if (authTokens.containsKey(auth.authToken())) {
-            throw new DataAccessException("Auth token already exists");
+            throw new DataAccessException("already taken");
         }
         authTokens.put(auth.authToken(), auth);
     }
@@ -85,7 +85,7 @@ public class MemoryDataAccess implements DataAccess {
         if (authTokens.containsKey(authToken)) {
             return authTokens.get(authToken);
         }
-        throw new DataAccessException("Invalid auth");
+        throw new DataAccessException("unauthorized");
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MemoryDataAccess implements DataAccess {
             authTokens.remove(authToken);
         }
         else {
-            throw new DataAccessException("Invalid auth");
+            throw new DataAccessException("unauthorized");
         }
     }
 }

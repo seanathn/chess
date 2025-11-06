@@ -25,9 +25,13 @@ public class UserService {
 
         UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
 
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            throw new DataAccessException("bad request");
+        }
+
         dataAccess.createUser(user);
 
-        String token = generateToken(); // may want to have it take user info
+        String token = generateToken();
         AuthData authData = new AuthData(token, user.username());
 
         dataAccess.createAuth(authData);
@@ -40,11 +44,11 @@ public class UserService {
         UserData user = dataAccess.getUser(loginRequest.username());
 
         if (user == null) {
-            throw new DataAccessException("User not found");
+            throw new DataAccessException("bad request");
         }
 
         if (!user.password().equals(loginRequest.password())) {
-            throw new DataAccessException("Invalid password");
+            throw new DataAccessException("bad request");
         }
 
         AuthData authData = new AuthData(loginRequest.username(), generateToken());
