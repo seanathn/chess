@@ -2,6 +2,8 @@ package server;
 
 import io.javalin.*;
 
+import java.util.UUID;
+
 public class Server {
 
     private final Javalin javalin;
@@ -16,6 +18,10 @@ public class Server {
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
+    }
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 
     public void stop() {
