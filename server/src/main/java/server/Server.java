@@ -3,18 +3,18 @@ package server;
 import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.ChessService;
+import service.UserService;
 
 import java.util.UUID;
 
 public class Server {
 
-//    private final ChessService service;
+    private final UserService service;
 //    private final WebSocketHandler webSocketHandler;
     private final Javalin javalin;
 
-    public Server() {
-//        this.service = service;
+    public Server(UserService service) {
+        this.service = service;
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -29,15 +29,6 @@ public class Server {
 
         // Register your endpoints and exception handlers here.
 
-//        javalin = Javalin.create(config -> config.staticFiles.add("public"))
-//                .delete("/db", this::deleteAllData)
-//                .post("/user", this::registerUser)
-//                .post("/session", this::loginUser)
-//                .delete("/session", this::logoutUser)
-//                .get("/game", this::getGamesList)
-//                .post("/game", this::createGame)
-//                .put("/game", this::joinGame)
-//                .exception(ResponseException.class, this::exceptionHandler);
 //                .ws("/ws", ws -> {
 //                    ws.onConnect(webSocketHandler);
 //                    ws.onMessage(webSocketHandler);
