@@ -1,9 +1,12 @@
 package server;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
+import model.request.RegisterRequest;
+import model.response.RegisterResult;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -55,7 +58,12 @@ public class Server {
     }
 
     private void registerUser(Context ctx) {
-//        userService.register();
+        RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        try {
+            userService.register(registerRequest);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loginUser(Context ctx) {
