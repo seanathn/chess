@@ -11,7 +11,6 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    // may need to switch it to be [8][8] but I need to look at documentation again
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
@@ -25,7 +24,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getColumn()][position.getRow()] = piece;
+        board[position.getColumn()-1][8-position.getRow()] = piece;
     }
 
     /**
@@ -36,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getColumn()][position.getRow()];
+        return board[position.getColumn()-1][8-position.getRow()];
     }
 
     /**
@@ -48,6 +47,7 @@ public class ChessBoard {
         setCastles();
         setKnights();
         setBishops();
+
     }
 
     private void setPawns() {
@@ -78,10 +78,10 @@ public class ChessBoard {
     private void setBishops() {
         ChessPiece bBishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         ChessPiece wBishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        board[0][0] = bBishop;
-        board[7][0] = bBishop;
-        board[0][7] = wBishop;
-        board[7][7] = wBishop;
+        board[2][0] = bBishop;
+        board[5][0] = bBishop;
+        board[2][7] = wBishop;
+        board[5][7] = wBishop;
     }
 
     @Override
