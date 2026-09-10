@@ -8,7 +8,8 @@ package chess;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] board = new ChessPiece[7][7];
+    // may need to switch it to be [8][8] but I need to look at documentation again
+    private final ChessPiece[][] board = new ChessPiece[7][7];
 
     public ChessBoard() {
         resetBoard();
@@ -41,7 +42,9 @@ public class ChessBoard {
      */
     public void resetBoard() {
         setPawns();
-
+        setCastles();
+        setKnights();
+        setBishops();
     }
 
     private void setPawns() {
@@ -57,6 +60,24 @@ public class ChessBoard {
         board[0][0] = bCastle;
         board[7][0] = bCastle;
         board[0][7] = wCastle;
-        board[7][7] = bCastle;
+        board[7][7] = wCastle;
+    }
+
+    private void setKnights() {
+        ChessPiece bKnight = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        ChessPiece wKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        board[1][0] = bKnight;
+        board[6][0] = bKnight;
+        board[1][7] = wKnight;
+        board[6][7] = wKnight;
+    }
+
+    private void setBishops() {
+        ChessPiece bBishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPiece wBishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        board[0][0] = bBishop;
+        board[7][0] = bBishop;
+        board[0][7] = wBishop;
+        board[7][7] = wBishop;
     }
 }
