@@ -45,6 +45,30 @@ public class ChessPiece {
         return piecce;
     }
 
+    private void rookMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves) {
+        int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        for (int[] dir : dirs) {
+            int row = piece.getRow();
+            int col = piece.getColumn();
+            row += dir[0];
+            col += dir[1];
+            while(row < 9 && row > 0 && col < 9 && col > 0) {
+                ChessPosition cur = new ChessPosition(row, col);
+                ChessMove move = new ChessMove(piece, cur, null);
+                if (board.getPiece(cur) == null) {
+                    posMoves.add(move);
+                } else if (board.getPiece(cur).getTeamColor() != board.getPiece(piece).getTeamColor()) {
+                    posMoves.add(move);
+                    break;
+                } else {
+                    break;
+                }
+                row += dir[0];
+                col += dir[1];
+            }
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -55,7 +79,9 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece chessPiece = board.getPiece(myPosition);
         ArrayList<ChessMove> moves = new ArrayList<>();
-
+        if (chessPiece.getPieceType() == PieceType.ROOK) {
+            rookMoves(board, myPosition, moves);
+        }
 
 
         return moves;
