@@ -45,8 +45,7 @@ public class ChessPiece {
         return piecce;
     }
 
-    private void rookMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves) {
-        int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+    private void slideMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves, int[][] dirs) {
         for (int[] dir : dirs) {
             int row = piece.getRow();
             int col = piece.getColumn();
@@ -80,7 +79,14 @@ public class ChessPiece {
         ChessPiece chessPiece = board.getPiece(myPosition);
         ArrayList<ChessMove> moves = new ArrayList<>();
         if (chessPiece.getPieceType() == PieceType.ROOK) {
-            rookMoves(board, myPosition, moves);
+            int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+            slideMoves(board, myPosition, moves, dirs);
+        } else if (chessPiece.getPieceType() == PieceType.BISHOP) {
+            int[][] dirs = {{1,1}, {-1,-1}, {-1,1}, {1,-1}};
+            slideMoves(board, myPosition, moves, dirs);
+        } else if (chessPiece.getPieceType() == PieceType.QUEEN) {
+            int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,-1}, {-1,1}, {1,-1}};
+            slideMoves(board, myPosition, moves, dirs);
         }
 
 
