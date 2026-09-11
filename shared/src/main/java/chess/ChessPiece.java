@@ -11,11 +11,11 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private ChessPiece.PieceType piecce;
-    private ChessGame.TeamColor team;
+    private final ChessPiece.PieceType piece;
+    private final ChessGame.TeamColor team;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.piecce = type;
+        this.piece = type;
         this.team = pieceColor;
     }
 
@@ -42,7 +42,7 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return piecce;
+        return piece;
     }
 
     private void slideMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves, int[][] dirs) {
@@ -99,18 +99,18 @@ public class ChessPiece {
             return false;
         }
         ChessPiece that = (ChessPiece) o;
-        return piecce == that.piecce && team == that.team;
+        return piece == that.piece && team == that.team;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(piecce, team);
+        return Objects.hash(piece, team);
     }
 
     @Override
     public String toString() {
         return "ChessPiece{" +
-                "piecce=" + piecce +
+                "piece=" + piece +
                 ", team=" + team +
                 '}';
     }
