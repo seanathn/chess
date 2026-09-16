@@ -107,6 +107,9 @@ public class ChessPiece {
         } else if (chessPiece.getPieceType() == PieceType.KING) {
             int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,-1}, {-1,1}, {1,-1}};
             placeMoves(board, myPosition, moves, dirs);
+        } else if (chessPiece.getPieceType() == PieceType.KNIGHT) {
+            int[][] dirs = {{2,1}, {-2,1}, {-2,-1}, {1,2}, {-1, 2}, {-1,-2}, {1,-2}, {2,-1}};
+            placeMoves(board, myPosition, moves, dirs);
         }
 
 
