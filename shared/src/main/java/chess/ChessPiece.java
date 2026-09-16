@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -68,6 +69,22 @@ public class ChessPiece {
         }
     }
 
+    private void placeMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves, int[][] dirs) {
+        for (int[] dir :dirs) {
+            int row = piece.getRow() + dir[0];
+            int col = piece.getColumn() + dir[1];
+            if (row < 9 && row > 0 && col > 0 && col < 9) {
+                ChessPosition cur = new ChessPosition(row, col);
+                ChessMove move = new ChessMove(piece, cur, null);
+                if (board.getPiece(cur) == null) {
+                    posMoves.add(move);
+                } else if (board.getPiece(cur).getTeamColor() != board.getPiece(piece).getTeamColor()) {
+                    posMoves.add(move);
+                }
+            }
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -87,6 +104,9 @@ public class ChessPiece {
         } else if (chessPiece.getPieceType() == PieceType.QUEEN) {
             int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,-1}, {-1,1}, {1,-1}};
             slideMoves(board, myPosition, moves, dirs);
+        } else if (chessPiece.getPieceType() == PieceType.KING) {
+            int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,-1}, {-1,1}, {1,-1}};
+            placeMoves(board, myPosition, moves, dirs);
         }
 
 
