@@ -85,6 +85,72 @@ public class ChessPiece {
         }
     }
 
+    private void pawnMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves) {
+        ChessGame.TeamColor pieceTeam = board.getPiece(piece).getTeamColor();
+        boolean startingPos = pieceTeam == ChessGame.TeamColor.BLACK && piece.getRow() == 7 || pieceTeam == ChessGame.TeamColor.WHITE && piece.getRow() == 2;
+        int end;
+        int dir;
+        if (pieceTeam == ChessGame.TeamColor.BLACK) {
+            dir = -1;
+            end = 1;
+        } else {
+            dir = 1;
+            end = 8;
+        }
+        // allowing for moving two spaces if it hasn't moved yet
+        if (startingPos) {
+            if (board.getPiece(new ChessPosition(piece.getRow()+dir, piece.getColumn())) == null) {
+                ChessPosition cur = new ChessPosition(piece.getRow() + (2 * dir), piece.getColumn());
+                if (board.getPiece(cur) == null) {
+                    posMoves.add(new ChessMove(piece, cur, null));
+                }
+            }
+        }
+        // simple move forward
+        if (board.getPiece(new ChessPosition(piece.getRow()+dir, piece.getColumn())) == null) {
+            if (piece.getRow()+dir != end) {
+                // no promotion
+                posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn()), null));
+            } else {
+                // promotion
+                PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
+                for (PieceType pieceType : pieceTypes) {
+                    posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn()), pieceType));
+                }
+            }
+        }
+        // capture left
+        if (piece.getColumn() - 1 < 9 && piece.getColumn() - 1 > 0) {
+            if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)) != null) {
+                if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)).getTeamColor() != pieceTeam) {
+                    if (piece.getRow() + dir == end) {
+                        PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
+                        for (PieceType pieceType : pieceTypes) {
+                            posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1), pieceType));
+                        }
+                    } else {
+                        posMoves.add(new ChessMove(piece, (new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)), null));
+                    }
+                }
+            }
+        }
+        // capture right
+        if (piece.getColumn() + 1 < 9 && piece.getColumn() + 1 > 0) {
+            if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)) != null) {
+                if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)).getTeamColor() != pieceTeam) {
+                    if (piece.getRow() + dir == end) {
+                        PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
+                        for (PieceType pieceType : pieceTypes) {
+                            posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1), pieceType));
+                        }
+                    } else {
+                        posMoves.add(new ChessMove(piece, (new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)), null));
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -110,9 +176,9 @@ public class ChessPiece {
         } else if (chessPiece.getPieceType() == PieceType.KNIGHT) {
             int[][] dirs = {{2,1}, {-2,1}, {-2,-1}, {1,2}, {-1, 2}, {-1,-2}, {1,-2}, {2,-1}};
             placeMoves(board, myPosition, moves, dirs);
+        } else if (chessPiece.getPieceType() == PieceType.PAWN) {
+            pawnMoves(board, myPosition, moves);
         }
-
-
         return moves;
     }
 
