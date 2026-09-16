@@ -85,9 +85,17 @@ public class ChessPiece {
         }
     }
 
+    private void pawnPromotion(ChessPosition piece, ArrayList<ChessMove> posMoves, int dirR, int dirC) {
+        PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
+        for (PieceType pieceType : pieceTypes) {
+            posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dirR, piece.getColumn() + dirC), pieceType));
+        }
+    }
+
     private void pawnMoves(ChessBoard board, ChessPosition piece, ArrayList<ChessMove> posMoves) {
         ChessGame.TeamColor pieceTeam = board.getPiece(piece).getTeamColor();
-        boolean startingPos = pieceTeam == ChessGame.TeamColor.BLACK && piece.getRow() == 7 || pieceTeam == ChessGame.TeamColor.WHITE && piece.getRow() == 2;
+        boolean startingPos = pieceTeam == ChessGame.TeamColor.BLACK && piece.getRow() == 7
+                || pieceTeam == ChessGame.TeamColor.WHITE && piece.getRow() == 2;
         int end;
         int dir;
         if (pieceTeam == ChessGame.TeamColor.BLACK) {
@@ -113,10 +121,7 @@ public class ChessPiece {
                 posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn()), null));
             } else {
                 // promotion
-                PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
-                for (PieceType pieceType : pieceTypes) {
-                    posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn()), pieceType));
-                }
+                pawnPromotion(piece, posMoves, dir, 0);
             }
         }
         // capture left
@@ -124,10 +129,7 @@ public class ChessPiece {
             if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)) != null) {
                 if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)).getTeamColor() != pieceTeam) {
                     if (piece.getRow() + dir == end) {
-                        PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
-                        for (PieceType pieceType : pieceTypes) {
-                            posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1), pieceType));
-                        }
+                        pawnPromotion(piece, posMoves, dir, -1);
                     } else {
                         posMoves.add(new ChessMove(piece, (new ChessPosition(piece.getRow() + dir, piece.getColumn() - 1)), null));
                     }
@@ -139,10 +141,7 @@ public class ChessPiece {
             if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)) != null) {
                 if (board.getPiece(new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)).getTeamColor() != pieceTeam) {
                     if (piece.getRow() + dir == end) {
-                        PieceType[] pieceTypes = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.QUEEN, PieceType.ROOK};
-                        for (PieceType pieceType : pieceTypes) {
-                            posMoves.add(new ChessMove(piece, new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1), pieceType));
-                        }
+                        pawnPromotion(piece, posMoves, dir, 1);
                     } else {
                         posMoves.add(new ChessMove(piece, (new ChessPosition(piece.getRow() + dir, piece.getColumn() + 1)), null));
                     }
