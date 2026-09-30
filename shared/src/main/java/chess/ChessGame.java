@@ -74,7 +74,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
-        if (validMoves.contains(move)) {
+        if (validMoves.contains(move) && teamTurn == curBoard.getPiece(move.getStartPosition()).getTeamColor()) {
             curBoard.addPiece(move.getEndPosition(), curBoard.getPiece(move.getStartPosition()));
             curBoard.addPiece(move.getStartPosition(), null);
             // may need to have teamColor switch once move is done.
@@ -101,7 +101,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            // king is in check and no valid moves
+            // king is in check and team no valid moves
             throw new RuntimeException("Not implemented");
         }
         return false;
