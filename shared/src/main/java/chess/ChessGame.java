@@ -101,7 +101,7 @@ public class ChessGame {
         }
     }
 
-    private ArrayList<ChessPosition> getTeamPiecePositions(TeamColor teamColor) {
+    private ArrayList<ChessPosition> getOpTeamPiecePositions(TeamColor teamColor) {
         ArrayList<ChessPosition> teamPos = new ArrayList<>();
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
@@ -136,7 +136,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ArrayList<ChessPosition> opPiecePos = getTeamPiecePositions(teamColor);
+        ArrayList<ChessPosition> opPiecePos = getOpTeamPiecePositions(teamColor);
         Set<ChessMove> opMoves = new HashSet<>();
         ChessPosition kingPos = findKing(teamColor);
         for (ChessPosition curPos : opPiecePos) {
@@ -144,11 +144,27 @@ public class ChessGame {
         }
         for (ChessMove curMove : opMoves) {
             ChessPosition endPos = curMove.getEndPosition();
+            assert kingPos != null;
             if (endPos.getColumn() == kingPos.getColumn() && endPos.getRow() == kingPos.getRow()) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean noValidMoves(TeamColor teamColor) {
+        ArrayList<ChessPosition> teamPos;
+        // purely set up for opposition because I don't want to add another function
+        if (teamColor == TeamColor.WHITE) {
+            teamPos = getOpTeamPiecePositions(TeamColor.BLACK);
+        } else {
+            teamPos = getOpTeamPiecePositions(TeamColor.WHITE);
+        }
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        for (ChessPosition curPos : teamPos) {
+            moves.addAll(validMoves(curPos));
+        }
+        return moves.isEmpty();
     }
 
     /**
@@ -160,7 +176,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
             // king is in check and team no valid moves
-            throw new RuntimeException("Not implemented");
+            return noValidMoves(teamColor);
         }
         return false;
     }
@@ -174,8 +190,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)) {
-            // team has no valid moves
-            throw new RuntimeException("Not implemented");
+            return noValidMoves(teamColor);
         }
         return false;
     }
