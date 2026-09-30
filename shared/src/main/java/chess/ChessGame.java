@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -50,7 +51,17 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece curPiece = curBoard.getPiece(startPosition);
+        Collection<ChessMove> posMoves = curPiece.pieceMoves(curBoard, startPosition);
+        for (ChessMove move : posMoves) {
+            ChessBoard temp = curBoard;
+            temp.addPiece(move.getEndPosition(), temp.getPiece(move.getStartPosition()));
+            temp.addPiece(move.getStartPosition(), null);
+            if (isInCheck(curPiece.getTeamColor())) {
+                posMoves.remove(move);
+            }
+        }
+        return posMoves;
     }
 
     /**
@@ -60,7 +71,13 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        if (validMoves.contains(move)) {
+            curBoard.addPiece(move.getEndPosition(), curBoard.getPiece(move.getStartPosition()));
+            curBoard.addPiece(move.getStartPosition(), null);
+        } else {
+            throw new InvalidMoveException("Move not valid");
+        }
     }
 
     /**
@@ -80,7 +97,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            // king is in check and no valid moves
+            throw new RuntimeException("Not implemented");
+        }
+        return false;
     }
 
     /**
@@ -91,7 +112,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            // team has no valid moves
+            throw new RuntimeException("Not implemented");
+        }
+        return false;
     }
 
     /**
