@@ -81,7 +81,11 @@ public class ChessGame {
         if (validMoves.contains(move) && teamTurn == curBoard.getPiece(move.getStartPosition()).getTeamColor()) {
             curBoard.addPiece(move.getEndPosition(), curBoard.getPiece(move.getStartPosition()));
             curBoard.addPiece(move.getStartPosition(), null);
-            // may need to have teamColor switch once move is done.
+            if (teamTurn == TeamColor.BLACK) {
+                setTeamTurn(TeamColor.WHITE);
+            } else {
+                setTeamTurn(TeamColor.BLACK);
+            }
         } else {
             throw new InvalidMoveException("Move not valid");
         }
