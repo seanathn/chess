@@ -54,13 +54,18 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece curPiece = curBoard.getPiece(startPosition);
         Collection<ChessMove> posMoves = curPiece.pieceMoves(curBoard, startPosition);
-        for (ChessMove move : posMoves) {
-            ChessBoard temp = curBoard;
-            temp.addPiece(move.getEndPosition(), temp.getPiece(move.getStartPosition()));
-            temp.addPiece(move.getStartPosition(), null);
+        Iterator<ChessMove> iterator = posMoves.iterator();
+
+        while (iterator.hasNext()) {
+            ChessMove move = iterator.next();
+            ChessPiece tempPiece = curBoard.getPiece(move.getEndPosition());
+            curBoard.addPiece(move.getEndPosition(), curPiece);
+            curBoard.addPiece(move.getStartPosition(), null);
             if (isInCheck(curPiece.getTeamColor())) {
-                posMoves.remove(move);
+                iterator.remove();
             }
+            curBoard.addPiece(move.getEndPosition(), tempPiece);
+            curBoard.addPiece(move.getStartPosition(), curPiece);
         }
         return posMoves;
     }
@@ -95,6 +100,21 @@ public class ChessGame {
         return teamPos;
     }
 
+    private ChessPosition findKing(TeamColor teamColor) {
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition curPos = new ChessPosition(i, j);
+                if (curBoard.getPiece(curPos) != null &&
+                        curBoard.getPiece(curPos).getTeamColor() == teamColor) {
+                    if (curBoard.getPiece(curPos).getPieceType() == ChessPiece.PieceType.KING) {
+                        return curPos;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -104,12 +124,13 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ArrayList<ChessPosition> opPiecePos = getTeamPiecePositions(teamColor);
         Set<ChessMove> opMoves = new HashSet<>();
-        ChessPosition kingPos = null;
+        ChessPosition kingPos = findKing(teamColor);
         for (ChessPosition curPos : opPiecePos) {
             opMoves.addAll(curBoard.getPiece(curPos).pieceMoves(curBoard, curPos));
         }
         for (ChessMove curMove : opMoves) {
-            if (curMove.getEndPosition() == kingPos) {
+            ChessPosition endPos = curMove.getEndPosition();
+            if (endPos.getColumn() == kingPos.getColumn() && endPos.getRow() == kingPos.getRow()) {
                 return true;
             }
         }
