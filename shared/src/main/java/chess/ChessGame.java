@@ -16,7 +16,9 @@ public class ChessGame {
     private ChessBoard curBoard;
 
     public ChessGame() {
-
+        teamTurn = TeamColor.WHITE;
+        curBoard = new ChessBoard();
+        curBoard.resetBoard();
     }
 
     /**
@@ -75,6 +77,7 @@ public class ChessGame {
         if (validMoves.contains(move)) {
             curBoard.addPiece(move.getEndPosition(), curBoard.getPiece(move.getStartPosition()));
             curBoard.addPiece(move.getStartPosition(), null);
+            // may need to have teamColor switch once move is done.
         } else {
             throw new InvalidMoveException("Move not valid");
         }
