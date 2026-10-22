@@ -16,7 +16,8 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user", this::register);
+                .post("/user", this::register)
+                .delete("/db", this::clearDB);
         // Register your endpoints and exception handlers here.
 
     }
@@ -33,6 +34,12 @@ public class Server {
             cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
 
+    }
+
+    private void clearDB(Context cxt) {
+        chessService.clearRequest();
+        cxt.status(200);
+        cxt.json(new Gson());
     }
 
     private static <T> T getBodyObject(Context context, Class<T> clazz) {

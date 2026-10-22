@@ -16,6 +16,10 @@ public class DataAccessAuths {
         return auths;
     }
 
+    public void clear() {
+        auths.clear();
+    }
+
     public void removeAuth(AuthData auth) {
         auths.remove(auth);
     }

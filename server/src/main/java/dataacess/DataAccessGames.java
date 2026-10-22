@@ -16,6 +16,11 @@ public class DataAccessGames {
         return games;
     }
 
+
+    public void clear() {
+        games.clear();
+    }
+
     public void removeGame(GameData game) {
         games.remove(game);
     }

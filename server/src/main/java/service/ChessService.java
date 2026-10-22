@@ -18,16 +18,27 @@ public class ChessService {
     private final DataAccessUsers userAccess = new DataAccessUsers();
 
     public String registerRequest(UserData input) {
-        ArrayList<UserData> users = userAccess.getListUsers();
+        UserData user = userAccess.findUserByUsername(input.username());
 
-        if (!users.contains(input)) {
-            users.add(input);
+        if (user == null) {
+            userAccess.addUser(input);
 //             create authdata record and place in list
-            AuthData auth = new AuthData(UUID.randomUUID().toString(), input.username());
+            AuthData auth = createAuthData(input.username());
             authAccess.addAuth(auth);
             return new Gson().toJson(auth);
         } else {
             throw new ForbiddenResponse("Error: username already taken");
         }
+    }
+
+    public void clearRequest() {
+        authAccess.clear();
+        gameAccess.clear();
+        userAccess.clear();
+    }
+
+
+    private AuthData createAuthData(String username) {
+        return new AuthData(UUID.randomUUID().toString(), username);
     }
 }
