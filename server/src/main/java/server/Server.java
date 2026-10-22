@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import io.javalin.*;
 import io.javalin.http.Context;
+import model.GameData;
 import model.UserData;
 import service.ChessService;
 
@@ -23,7 +24,8 @@ public class Server {
                 .delete("/db", this::clearDB)
                 .post("/session", this::login)
                 .delete("/session", this::logout)
-                .get("/game", this::listGames);
+                .get("/game", this::listGames)
+                .post("/game", this::createGame);
         // Register your endpoints and exception handlers here.
     }
 
@@ -79,6 +81,20 @@ public class Server {
 
             ctx.status(200);
             ctx.json(new Gson().toJson(Map.of("games", chessService.listGamesRequest(authToken))));
+        } catch (Exception e) {
+            ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
+    }
+
+    private void createGame(Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+            GameData game = getBodyObject(ctx, GameData.class);
+
+            int result = chessService.createGameRequest(authToken, game);
+            ctx.status(200);
+            ctx.json(new Gson().toJson(Map.of("gameID", result)));
         } catch (Exception e) {
             ctx.status(401);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));

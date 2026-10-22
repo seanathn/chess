@@ -1,11 +1,11 @@
 package service;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataacess.DataAccessAuths;
+import dataacess.DataAccessException;
 import dataacess.DataAccessGames;
 import dataacess.DataAccessUsers;
-import io.javalin.http.ForbiddenResponse;
-import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -20,7 +20,7 @@ public class ChessService {
     private final DataAccessGames gameAccess = new DataAccessGames();
     private final DataAccessUsers userAccess = new DataAccessUsers();
 
-    public String registerRequest(UserData input) {
+    public String registerRequest(UserData input) throws DataAccessException {
         UserData user = userAccess.findUserByUsername(input.username());
 
         if (user == null) {
@@ -28,7 +28,7 @@ public class ChessService {
 //             create authdata record and place in list
             return new Gson().toJson(createAuthData(input.username()));
         } else {
-            throw new ForbiddenResponse("Error: username already taken");
+            throw new DataAccessException("Error: username already taken");
         }
     }
 
@@ -38,39 +38,50 @@ public class ChessService {
         userAccess.clear();
     }
 
-    public String loginRequest(UserData input) {
+    public String loginRequest(UserData input) throws DataAccessException {
         UserData user = userAccess.findUserByUsername(input.username());
-        if (authAccess.findAuthByUsername(input.username()) != null) {
-            throw new UnauthorizedResponse("Error: unauthorized");
-        }
         if (user != null && Objects.equals(input.password(), user.password())) {
             return new Gson().toJson(createAuthData(input.username()));
         } else {
-            throw new UnauthorizedResponse("Error: unauthorized");
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
-    public void logoutRequest(String authToken) {
+    public void logoutRequest(String authToken) throws DataAccessException {
         AuthData auth = authAccess.findAuthByAuthToken(authToken);
         if (auth != null) {
             authAccess.removeAuth(auth);
         } else {
-            throw new UnauthorizedResponse("Error: unauthorized");
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
-    public ArrayList<GameData> listGamesRequest(String authToken) {
-        if (authAccess.findAuthByAuthToken(authToken) != null) {
+    public ArrayList<GameData> listGamesRequest(String authToken) throws DataAccessException {
+        if (authorized(authToken)) {
             return gameAccess.getListGames();
-        } else {
-            throw new UnauthorizedResponse("Error: unauthorized");
         }
+        return null;
     }
 
+    public int createGameRequest(String authToken, GameData game) throws DataAccessException {
+        if (authorized(authToken)) {
+            GameData newGame = new GameData(1234, "", "", game.gameName(), new ChessGame());
+            gameAccess.addGame(newGame);
+            return newGame.gameID();
+        }
+        return 0;
+    }
 
     private AuthData createAuthData(String username) {
         AuthData auth = new AuthData(UUID.randomUUID().toString(), username);
         authAccess.addAuth(auth);
         return auth;
+    }
+
+    private boolean authorized(String authToken) throws DataAccessException {
+        if (authAccess.findAuthByAuthToken(authToken) == null) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+        return true;
     }
 }
