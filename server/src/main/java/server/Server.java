@@ -22,7 +22,8 @@ public class Server {
                 .post("/user", this::register)
                 .delete("/db", this::clearDB)
                 .post("/session", this::login)
-                .delete("/session", this::logout);
+                .delete("/session", this::logout)
+                .get("/game", this::listGames);
         // Register your endpoints and exception handlers here.
     }
 
@@ -66,6 +67,18 @@ public class Server {
 
             ctx.status(200);
             ctx.json(new Gson().toJson(emptyMap()));
+        } catch (Exception e) {
+            ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
+    }
+
+    private void listGames(Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+
+            ctx.status(200);
+            ctx.json(new Gson().toJson(Map.of("games", chessService.listGamesRequest(authToken))));
         } catch (Exception e) {
             ctx.status(401);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));

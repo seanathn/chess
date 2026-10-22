@@ -7,8 +7,10 @@ import dataacess.DataAccessUsers;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -52,6 +54,14 @@ public class ChessService {
         AuthData auth = authAccess.findAuthByAuthToken(authToken);
         if (auth != null) {
             authAccess.removeAuth(auth);
+        } else {
+            throw new UnauthorizedResponse("Error: unauthorized");
+        }
+    }
+
+    public ArrayList<GameData> listGamesRequest(String authToken) {
+        if (authAccess.findAuthByAuthToken(authToken) != null) {
+            return gameAccess.getListGames();
         } else {
             throw new UnauthorizedResponse("Error: unauthorized");
         }
