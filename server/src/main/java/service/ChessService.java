@@ -9,7 +9,6 @@ import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -44,6 +43,15 @@ public class ChessService {
         }
         if (user != null && Objects.equals(input.password(), user.password())) {
             return new Gson().toJson(createAuthData(input.username()));
+        } else {
+            throw new UnauthorizedResponse("Error: unauthorized");
+        }
+    }
+
+    public void logoutRequest(String authToken) {
+        AuthData auth = authAccess.findAuthByAuthToken(authToken);
+        if (auth != null) {
+            authAccess.removeAuth(auth);
         } else {
             throw new UnauthorizedResponse("Error: unauthorized");
         }

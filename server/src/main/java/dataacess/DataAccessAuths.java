@@ -29,6 +29,15 @@ public class DataAccessAuths {
         return null;
     }
 
+    public AuthData findAuthByAuthToken(String authToken) {
+        for (AuthData auth : auths) {
+            if (auth.authToken().equals(authToken)) {
+                return auth;
+            }
+        }
+        return null;
+    }
+
     public void removeAuth(AuthData auth) {
         auths.remove(auth);
     }

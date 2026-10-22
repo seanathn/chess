@@ -18,7 +18,8 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::register)
                 .delete("/db", this::clearDB)
-                .post("/session", this::login);
+                .post("/session", this::login)
+                .delete("/session", this::logout);
         // Register your endpoints and exception handlers here.
     }
 
@@ -48,6 +49,16 @@ public class Server {
 
             cxt.status(200);
             cxt.json(result);
+        } catch (Exception e) {
+            cxt.status(401);
+            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
+    }
+
+    private void logout(Context cxt) {
+        try {
+            String authToken = cxt.header("authorization");
+            chessService.logoutRequest(authToken);
         } catch (Exception e) {
             cxt.status(401);
             cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
