@@ -20,6 +20,15 @@ public class DataAccessAuths {
         auths.clear();
     }
 
+    public AuthData findAuthByUsername(String username) {
+        for (AuthData auth : auths) {
+            if (auth.username().equals(username)) {
+                return auth;
+            }
+        }
+        return null;
+    }
+
     public void removeAuth(AuthData auth) {
         auths.remove(auth);
     }

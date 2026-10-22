@@ -17,9 +17,9 @@ public class Server {
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::register)
-                .delete("/db", this::clearDB);
+                .delete("/db", this::clearDB)
+                .post("/session", this::login);
         // Register your endpoints and exception handlers here.
-
     }
 
     private void register(Context cxt) {
@@ -39,7 +39,19 @@ public class Server {
     private void clearDB(Context cxt) {
         chessService.clearRequest();
         cxt.status(200);
-        cxt.json(new Gson());
+    }
+
+    private void login(Context cxt) {
+        try {
+            UserData user = getBodyObject(cxt, UserData.class);
+            String result = chessService.loginRequest(user);
+
+            cxt.status(200);
+            cxt.json(result);
+        } catch (Exception e) {
+            cxt.status(401);
+            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
     }
 
     private static <T> T getBodyObject(Context context, Class<T> clazz) {

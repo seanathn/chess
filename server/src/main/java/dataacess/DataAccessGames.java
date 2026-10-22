@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class DataAccessGames {
 
-    private ArrayList<GameData> games = new ArrayList<>();
+    private final ArrayList<GameData> games = new ArrayList<>();
 
     public void addGame(GameData game) {
         games.add(game);
