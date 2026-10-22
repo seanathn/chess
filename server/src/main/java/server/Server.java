@@ -2,24 +2,17 @@ package server;
 
 import com.google.gson.Gson;
 import io.javalin.*;
-import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
-import io.javalin.http.ForbiddenResponse;
-import model.AuthData;
-import model.GameData;
 import model.UserData;
+import service.ChessService;
 
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class Server {
-    private final ArrayList<UserData> users = new ArrayList<>();
-    private final ArrayList<AuthData> auths = new ArrayList<>();
-    private final ArrayList<GameData> games = new ArrayList<>();
 
     private final Javalin javalin;
+    private final ChessService chessService = new ChessService();
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -29,17 +22,17 @@ public class Server {
     }
 
     private void register(Context cxt) {
-        // create userdata record and place in list
-        UserData input = getBodyObject(cxt, UserData.class);
-        if (!users.contains(input)) {
-            users.add(input);
-//             create authdata record and place in list
-            AuthData auth = new AuthData(UUID.randomUUID().toString(), input.username());
-            auths.add(auth);
-            cxt.result(new Gson().toJson(auth));
-        } else {
-            throw new ForbiddenResponse("Already Taken");
+        try {
+            UserData user = getBodyObject(cxt, UserData.class);
+            String result = chessService.registerRequest(user);
+
+            cxt.status(200);
+            cxt.json(result);
+        } catch (Exception e) {
+            cxt.status(403);
+            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
+
     }
 
     private static <T> T getBodyObject(Context context, Class<T> clazz) {
