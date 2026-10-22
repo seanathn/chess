@@ -6,7 +6,10 @@ import io.javalin.http.Context;
 import model.UserData;
 import service.ChessService;
 
+import java.util.Collections;
 import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 
 public class Server {
@@ -23,45 +26,49 @@ public class Server {
         // Register your endpoints and exception handlers here.
     }
 
-    private void register(Context cxt) {
+    private void register(Context ctx) {
         try {
-            UserData user = getBodyObject(cxt, UserData.class);
+            UserData user = getBodyObject(ctx, UserData.class);
             String result = chessService.registerRequest(user);
 
-            cxt.status(200);
-            cxt.json(result);
+            ctx.status(200);
+            ctx.json(result);
         } catch (Exception e) {
-            cxt.status(403);
-            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
+            ctx.status(403);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
 
     }
 
-    private void clearDB(Context cxt) {
+    private void clearDB(Context ctx) {
         chessService.clearRequest();
-        cxt.status(200);
+        ctx.status(200);
+        ctx.json(new Gson().toJson(emptyMap()));
     }
 
-    private void login(Context cxt) {
+    private void login(Context ctx) {
         try {
-            UserData user = getBodyObject(cxt, UserData.class);
+            UserData user = getBodyObject(ctx, UserData.class);
             String result = chessService.loginRequest(user);
 
-            cxt.status(200);
-            cxt.json(result);
+            ctx.status(200);
+            ctx.json(result);
         } catch (Exception e) {
-            cxt.status(401);
-            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
+            ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
 
-    private void logout(Context cxt) {
+    private void logout(Context ctx) {
         try {
-            String authToken = cxt.header("authorization");
+            String authToken = ctx.header("authorization");
             chessService.logoutRequest(authToken);
+
+            ctx.status(200);
+            ctx.json(new Gson().toJson(emptyMap()));
         } catch (Exception e) {
-            cxt.status(401);
-            cxt.json(new Gson().toJson(Map.of("message", e.getMessage())));
+            ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
 
