@@ -20,6 +20,9 @@ public class ChessService {
     private int gameIDNum = 0;
 
     public String registerRequest(UserData input) throws DataAccessException {
+        if (input.username() == null || input.password() == null) {
+            throw new BadRequestError();
+        }
         UserData user = userAccess.findUserByUsername(input.username());
 
         if (user == null) {
@@ -38,6 +41,9 @@ public class ChessService {
     }
 
     public String loginRequest(UserData input) throws DataAccessException {
+        if (input.username() == null || input.password() == null) {
+            throw new BadRequestError();
+        }
         UserData user = userAccess.findUserByUsername(input.username());
         if (user != null && Objects.equals(input.password(), user.password())) {
             return new Gson().toJson(createAuthData(input.username()));
@@ -63,6 +69,9 @@ public class ChessService {
     }
 
     public int createGameRequest(String authToken, GameData game) throws DataAccessException {
+        if (game.gameName() == null) {
+            throw new BadRequestError();
+        }
         if (authorized(authToken)) {
             gameIDNum++;
             GameData newGame = new GameData(gameIDNum, game.gameName(), null, null, new ChessGame());
