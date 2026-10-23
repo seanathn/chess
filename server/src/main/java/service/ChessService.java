@@ -3,7 +3,6 @@ package service;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataacess.*;
-import io.javalin.http.BadRequestResponse;
 import model.AuthData;
 import model.GameData;
 import model.JoinGameRequest;

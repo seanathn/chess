@@ -11,7 +11,6 @@ import model.JoinGameRequest;
 import model.UserData;
 import service.ChessService;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
