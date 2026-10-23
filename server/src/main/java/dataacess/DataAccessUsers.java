@@ -22,14 +22,6 @@ public class DataAccessUsers {
         return null;
     }
 
-    public ArrayList<UserData> getListUsers() {
-        return users;
-    }
-
-    public void removeUser(UserData user) {
-        users.remove(user);
-    }
-
     public void clear() {
         users.clear();
     }

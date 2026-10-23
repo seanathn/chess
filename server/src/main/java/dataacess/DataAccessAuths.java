@@ -12,21 +12,8 @@ public class DataAccessAuths {
         auths.add(auth);
     }
 
-    public ArrayList<AuthData> getListAuths() {
-        return auths;
-    }
-
     public void clear() {
         auths.clear();
-    }
-
-    public AuthData findAuthByUsername(String username) {
-        for (AuthData auth : auths) {
-            if (auth.username().equals(username)) {
-                return auth;
-            }
-        }
-        return null;
     }
 
     public AuthData findAuthByAuthToken(String authToken) {

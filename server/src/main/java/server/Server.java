@@ -1,9 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
+import dataacess.AlreadyTakenException;
+import dataacess.BadRequestError;
+import dataacess.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.GameData;
+import model.JoinGameRequest;
 import model.UserData;
 import service.ChessService;
 
@@ -25,7 +29,8 @@ public class Server {
                 .post("/session", this::login)
                 .delete("/session", this::logout)
                 .get("/game", this::listGames)
-                .post("/game", this::createGame);
+                .post("/game", this::createGame)
+                .put("game", this::joinGame);
         // Register your endpoints and exception handlers here.
     }
 
@@ -36,8 +41,14 @@ public class Server {
 
             ctx.status(200);
             ctx.json(result);
-        } catch (Exception e) {
+        } catch (AlreadyTakenException e) {
             ctx.status(403);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (BadRequestError e) {
+            ctx.status(400);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
 
@@ -56,8 +67,14 @@ public class Server {
 
             ctx.status(200);
             ctx.json(result);
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
             ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (BadRequestError e) {
+            ctx.status(400);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
@@ -69,8 +86,11 @@ public class Server {
 
             ctx.status(200);
             ctx.json(new Gson().toJson(emptyMap()));
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
             ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
@@ -81,8 +101,11 @@ public class Server {
 
             ctx.status(200);
             ctx.json(new Gson().toJson(Map.of("games", chessService.listGamesRequest(authToken))));
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
             ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }
@@ -95,8 +118,37 @@ public class Server {
             int result = chessService.createGameRequest(authToken, game);
             ctx.status(200);
             ctx.json(new Gson().toJson(Map.of("gameID", result)));
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) {
             ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (BadRequestError e) {
+            ctx.status(400);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
+    }
+
+    private void joinGame(Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+            JoinGameRequest request = getBodyObject(ctx, JoinGameRequest.class);
+            chessService.joinGameRequest(authToken, request);
+
+            ctx.status(200);
+            ctx.json(new Gson().toJson(emptyMap()));
+        } catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (BadRequestError e) {
+            ctx.status(400);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (AlreadyTakenException e) {
+            ctx.status(403);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        } catch (Exception e) {
+            ctx.status(500);
             ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
         }
     }

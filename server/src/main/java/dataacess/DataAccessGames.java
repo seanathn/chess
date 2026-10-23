@@ -3,6 +3,7 @@ package dataacess;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DataAccessGames {
 
@@ -16,12 +17,26 @@ public class DataAccessGames {
         return games;
     }
 
+    public GameData findGameByID(int gameID) {
+        for (GameData game : games) {
+            if (game.gameID() == gameID) {
+                return game;
+            }
+        }
+        return null;
+    }
+
+    public void setTeamUser(String teamColor, String username, GameData game) {
+        games.remove(game);
+        if (Objects.equals(teamColor, "WHITE")) {
+            games.add(game.setWhiteTeam(username));
+        } else {
+            games.add(game.setBlackTeam(username));
+        }
+    }
 
     public void clear() {
         games.clear();
     }
 
-    public void removeGame(GameData game) {
-        games.remove(game);
-    }
 }

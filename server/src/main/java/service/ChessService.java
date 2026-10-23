@@ -2,14 +2,12 @@ package service;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataacess.DataAccessAuths;
-import dataacess.DataAccessException;
-import dataacess.DataAccessGames;
-import dataacess.DataAccessUsers;
+import dataacess.*;
+import io.javalin.http.BadRequestResponse;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameRequest;
 import model.UserData;
-
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,6 +17,7 @@ public class ChessService {
     private final DataAccessAuths authAccess = new DataAccessAuths();
     private final DataAccessGames gameAccess = new DataAccessGames();
     private final DataAccessUsers userAccess = new DataAccessUsers();
+    private int gameIDNum = 0;
 
     public String registerRequest(UserData input) throws DataAccessException {
         UserData user = userAccess.findUserByUsername(input.username());
@@ -28,7 +27,7 @@ public class ChessService {
 //             create authdata record and place in list
             return new Gson().toJson(createAuthData(input.username()));
         } else {
-            throw new DataAccessException("Error: username already taken");
+            throw new AlreadyTakenException();
         }
     }
 
@@ -43,7 +42,7 @@ public class ChessService {
         if (user != null && Objects.equals(input.password(), user.password())) {
             return new Gson().toJson(createAuthData(input.username()));
         } else {
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
     }
 
@@ -52,7 +51,7 @@ public class ChessService {
         if (auth != null) {
             authAccess.removeAuth(auth);
         } else {
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
     }
 
@@ -65,11 +64,39 @@ public class ChessService {
 
     public int createGameRequest(String authToken, GameData game) throws DataAccessException {
         if (authorized(authToken)) {
-            GameData newGame = new GameData(1234, "", "", game.gameName(), new ChessGame());
+            gameIDNum++;
+            GameData newGame = new GameData(gameIDNum, game.gameName(), null, null, new ChessGame());
             gameAccess.addGame(newGame);
             return newGame.gameID();
         }
         return 0;
+    }
+
+    public void joinGameRequest(String authToken, JoinGameRequest request) throws DataAccessException {
+        if (authorized(authToken)) {
+            GameData game = gameAccess.findGameByID(request.gameID());
+            if (game == null) {
+                throw new BadRequestError();
+            }
+            if (checkIfTeamEmpty(request.playerColor(), game)) {
+                gameAccess.setTeamUser(request.playerColor(), authAccess.
+                        findAuthByAuthToken(authToken).username(), game);
+            } else {
+                throw new AlreadyTakenException();
+            }
+        }
+    }
+
+    private boolean checkIfTeamEmpty(String teamColor, GameData game) throws DataAccessException {
+        if (teamColor == null) {
+            throw new BadRequestError();
+        }
+        if (Objects.equals(teamColor, "WHITE")) {
+            return game.whiteUsername() == null;
+        } else if (teamColor.equals("BLACK")) {
+            return game.blackUsername() == null;
+        }
+        throw new BadRequestError();
     }
 
     private AuthData createAuthData(String username) {
@@ -80,7 +107,7 @@ public class ChessService {
 
     private boolean authorized(String authToken) throws DataAccessException {
         if (authAccess.findAuthByAuthToken(authToken) == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         return true;
     }
