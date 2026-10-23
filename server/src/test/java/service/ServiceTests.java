@@ -32,7 +32,7 @@ class ServiceTests {
 
     @AfterEach
     void tearDown() {
-        if (server != null) server.stop();
+        if (server != null) {server.stop();}
     }
 
     @Test
@@ -162,7 +162,7 @@ class ServiceTests {
         try {
             HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(baseUrl + path))
                     .header("Content-Type", "application/json");
-            if (token != null) builder.header("authorization", token);
+            if (token != null) {builder.header("authorization", token);}
             builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
                     : HttpRequest.BodyPublishers.ofString(body));
             return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
