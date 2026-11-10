@@ -2,6 +2,7 @@ package datacess.sql;
 
 import dataacess.DataAccessException;
 import dataacess.DatabaseManager;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
@@ -99,5 +100,32 @@ public class sqlTests {
         user = DatabaseManager.findByUsername(conn, username);
 
         assertNull(user);
+    }
+
+    @Test
+    public void testAddAuth() throws SQLException, DataAccessException {
+
+        String username = "testUser123";
+        String authToken = "password123";
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertAuth(conn, username, authToken);
+
+        conn.close();
+
+        conn = DatabaseManager.getConnection();
+
+        AuthData auth = DatabaseManager.findByAuthToken(conn, authToken);
+
+        conn.close();
+
+        conn = DatabaseManager.getConnection();
+
+        DatabaseManager.clearAuthData(conn);
+
+        assertNotNull(auth);
+        assertEquals(username, auth.username());
+        assertEquals(authToken, auth.authToken());
     }
 }

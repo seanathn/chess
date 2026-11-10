@@ -1,5 +1,6 @@
 package dataacess;
 
+import model.AuthData;
 import model.UserData;
 import java.sql.*;
 import java.util.Properties;
@@ -120,6 +121,36 @@ public class DatabaseManager {
 
     public static void clearUserData(Connection conn) throws SQLException {
         try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE user")) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static void insertAuth(Connection conn, String username, String authToken) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("INSERT INTO auth (authToken, username) " +
+                "VALUES(?,?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1,authToken);
+            preparedStatement.setString(2, username);
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static AuthData findByAuthToken(Connection conn, String authToken) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("SELECT username, authToken FROM auth " +
+                "WHERE authToken = ?")) {
+            preparedStatement.setString(1, authToken);
+            try (var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    return new AuthData(resultSet.getString("authToken"),
+                            resultSet.getString("username"));
+                }
+                return null;
+            }
+        }
+    }
+
+    public static void clearAuthData(Connection conn) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE auth")) {
             preparedStatement.executeUpdate();
         }
     }
