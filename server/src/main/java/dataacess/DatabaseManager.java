@@ -155,6 +155,14 @@ public class DatabaseManager {
         }
     }
 
+    public static void deleteAuthData(Connection conn, AuthData auth) throws SQLException {
+        // only looking at authToken right now, but may need to look at username too
+        try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authToken = ?")) {
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.executeUpdate();
+        }
+    }
+
     private static void loadPropertiesFromResources() {
         try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
             if (propStream == null) {

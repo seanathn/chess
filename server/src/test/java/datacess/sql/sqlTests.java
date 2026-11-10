@@ -128,4 +128,24 @@ public class sqlTests {
         assertEquals(username, auth.username());
         assertEquals(authToken, auth.authToken());
     }
+
+    @Test
+    public void testDeleteAuth() throws SQLException, DataAccessException {
+        String username = "testUser123";
+        String authToken = "password123";
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertAuth(conn, username, authToken);
+
+        AuthData auth = DatabaseManager.findByAuthToken(conn, authToken);
+
+        assertNotNull(auth);
+
+        DatabaseManager.deleteAuthData(conn, auth);
+
+        auth = DatabaseManager.findByAuthToken(conn, authToken);
+
+        assertNull(auth);
+    }
 }
