@@ -37,5 +37,6 @@ public class DataAccessUsers {
 //        users.clear();
         conn = DatabaseManager.getConnection();
         DatabaseManager.clearUserData(conn);
+        conn.close();
     }
 }

@@ -64,14 +64,14 @@ public class ChessService {
         }
     }
 
-    public ArrayList<GameData> listGamesRequest(String authToken) throws DataAccessException {
+    public ArrayList<GameData> listGamesRequest(String authToken) throws DataAccessException, SQLException {
         if (authorized(authToken)) {
             return gameAccess.getListGames();
         }
         return null;
     }
 
-    public int createGameRequest(String authToken, GameData game) throws DataAccessException {
+    public int createGameRequest(String authToken, GameData game) throws DataAccessException, SQLException {
         if (game.gameName() == null) {
             throw new BadRequestError();
         }
@@ -84,7 +84,7 @@ public class ChessService {
         return 0;
     }
 
-    public void joinGameRequest(String authToken, JoinGameRequest request) throws DataAccessException {
+    public void joinGameRequest(String authToken, JoinGameRequest request) throws DataAccessException, SQLException {
         if (authorized(authToken)) {
             GameData game = gameAccess.findGameByID(request.gameID());
             if (game == null) {

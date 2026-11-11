@@ -211,9 +211,6 @@ public class DatabaseManager {
                             resultSet.getString("blackUsername"), new Gson().fromJson(
                                     resultSet.getString("chessGame"), ChessGame.class)));
                 }
-                if (games.isEmpty()) {
-                    return null;
-                }
                 return games;
             }
         }
