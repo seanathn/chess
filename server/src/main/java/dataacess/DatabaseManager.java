@@ -104,11 +104,12 @@ public class DatabaseManager {
                 "WHERE username = ?")) {
             preparedStatement.setString(1, username);
             try (var resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     return new UserData(resultSet.getString("username"),
                             resultSet.getString("password"), resultSet.getString("email"));
-                }
+                } else {
                 return null;
+                }
             }
         }
     }
@@ -134,7 +135,7 @@ public class DatabaseManager {
                 "WHERE authToken = ?")) {
             preparedStatement.setString(1, authToken);
             try (var resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     return new AuthData(resultSet.getString("authToken"),
                             resultSet.getString("username"));
                 }
@@ -192,7 +193,7 @@ public class DatabaseManager {
                 "blackUsername, chessGame FROM game WHERE gameID = ?")) {
             preparedStatement.setInt(1, gameID);
             try (var resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     return new GameData(resultSet.getInt("gameID"),
                             resultSet.getString("gameName"), resultSet.getString("whiteUsername"),
                             resultSet.getString("blackUsername"),

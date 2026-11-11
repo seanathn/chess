@@ -36,6 +36,8 @@ public class SQLTests {
 
         UserData user = DatabaseManager.findByUsername(conn, username);
 
+        DatabaseManager.clearUserData(conn);
+
         conn.close();
 
         assertNotNull(user);
@@ -62,6 +64,8 @@ public class SQLTests {
         conn = DatabaseManager.getConnection();
 
         UserData user = DatabaseManager.findByUsername(conn, username);
+
+        DatabaseManager.clearUserData(conn);
 
         conn.close();
 
