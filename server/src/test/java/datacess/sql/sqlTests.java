@@ -1,13 +1,16 @@
 package datacess.sql;
 
+import chess.ChessGame;
 import dataacess.DataAccessException;
 import dataacess.DatabaseManager;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -146,6 +149,21 @@ public class sqlTests {
 
         auth = DatabaseManager.findByAuthToken(conn, authToken);
 
+        conn.close();
+
         assertNull(auth);
+    }
+
+    @Test
+    public void testGameAdd() throws SQLException, DataAccessException {
+        GameData game = new GameData(47, "dude", "where", "is", new ChessGame());
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertGame(conn, game);
+
+        DatabaseManager.clearGameData(conn);
+
+        conn.close();
     }
 }

@@ -1,6 +1,8 @@
 package dataacess;
 
+import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import java.sql.*;
 import java.util.Properties;
@@ -69,22 +71,11 @@ public class DatabaseManager {
 
             var createGameTable = """
                     CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
-                    blackUsername TEXT, turnColor TEXT)
+                    blackUsername TEXT, chessGame TEXT)
                     """;
 
             try (var createTableStatement = conn.prepareStatement(createGameTable)) {
                 createTableStatement.executeUpdate();
-            }
-
-            var createBoardTable = """
-                    CREATE TABLE IF NOT EXISTS board (gameID INT, rowNum INT NOT NULL, colNum INT NOT NULL,
-                    teamColor CHAR, pieceType VARCHAR(2))
-                    """;
-
-            try (var createTableStatement = conn.prepareStatement(createBoardTable)) {
-                createTableStatement.executeUpdate();
-            } catch (Exception e) {
-                throw new SQLException("Issue Here");
             }
 
 
@@ -159,6 +150,25 @@ public class DatabaseManager {
         // only looking at authToken right now, but may need to look at username too
         try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authToken = ?")) {
             preparedStatement.setString(1, auth.authToken());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static void insertGame(Connection conn, GameData game) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, gameName, whiteUsername, blackUsername, chessGame) " +
+                "VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1,game.gameID());
+            preparedStatement.setString(2, game.gameName());
+            preparedStatement.setString(3, game.whiteUsername());
+            preparedStatement.setString(4, game.blackUsername());
+            preparedStatement.setString(5, new Gson().toJson(game.game()));
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static void clearGameData(Connection conn) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE game")) {
             preparedStatement.executeUpdate();
         }
     }
