@@ -32,7 +32,7 @@ public class DatabaseManager {
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new DataAccessException("Error: failed to create database", ex);
         }
     }
 
@@ -84,7 +84,7 @@ public class DatabaseManager {
 
             return conn;
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to get connection", ex);
+            throw new DataAccessException("Error: failed to get connection", ex);
         }
     }
 
@@ -158,7 +158,8 @@ public class DatabaseManager {
     }
 
     public static void insertGame(Connection conn, GameData game) throws SQLException {
-        try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, gameName, whiteUsername, blackUsername, chessGame) " +
+        try (var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, " +
+                "gameName, whiteUsername, blackUsername, chessGame) " +
                 "VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1,game.gameID());
             preparedStatement.setString(2, game.gameName());
@@ -176,7 +177,8 @@ public class DatabaseManager {
         }
     }
 
-    public static void updateTeamUsername(Connection conn, String teamColor, String username, GameData game) throws SQLException {
+    public static void updateTeamUsername(Connection conn, String teamColor, String username,
+                                          GameData game) throws SQLException {
         try (var preparedStatement = conn.prepareStatement("UPDATE game SET " + teamColor + "=? WHERE gameID=?")) {
             preparedStatement.setString(1, username);
             preparedStatement.setInt(2, game.gameID());
@@ -217,7 +219,8 @@ public class DatabaseManager {
     }
 
     private static void loadPropertiesFromResources() {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
+        try (var propStream = Thread.currentThread().getContextClassLoader().
+                getResourceAsStream("db.properties")) {
             if (propStream == null) {
                 throw new Exception("Unable to load db.properties");
             }

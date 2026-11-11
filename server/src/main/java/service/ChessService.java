@@ -55,7 +55,7 @@ public class ChessService {
         }
     }
 
-    public void logoutRequest(String authToken) throws DataAccessException {
+    public void logoutRequest(String authToken) throws DataAccessException, SQLException {
         AuthData auth = authAccess.findAuthByAuthToken(authToken);
         if (auth != null) {
             authAccess.removeAuth(auth);
@@ -111,13 +111,13 @@ public class ChessService {
         throw new BadRequestError();
     }
 
-    private AuthData createAuthData(String username) {
+    private AuthData createAuthData(String username) throws SQLException, DataAccessException {
         AuthData auth = new AuthData(UUID.randomUUID().toString(), username);
         authAccess.addAuth(auth);
         return auth;
     }
 
-    private boolean authorized(String authToken) throws DataAccessException {
+    private boolean authorized(String authToken) throws DataAccessException, SQLException {
         if (authAccess.findAuthByAuthToken(authToken) == null) {
             throw new UnauthorizedException();
         }
