@@ -2,7 +2,7 @@ package datacess.sql;
 
 import chess.ChessGame;
 import dataacess.DataAccessException;
-import dataacess.DatabaseManager;
+import dataacess.sql.DatabaseManager;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

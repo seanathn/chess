@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataacess.*;
+import dataacess.sql.DatabaseManager;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -20,9 +21,10 @@ public class ChessService {
 
     public ChessService() {
         try {
-            DatabaseManager initialSetUp = new DatabaseManager();
+            new DatabaseManager();
         } catch (Exception e) {
             // test to see if this fixes the autograder
+            throw new RuntimeException("Error: Failed initial database configuration");
         }
     }
 
