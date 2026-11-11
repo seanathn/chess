@@ -6,6 +6,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -195,6 +197,24 @@ public class DatabaseManager {
                             new Gson().fromJson(resultSet.getString("chessGame"), ChessGame.class));
                 }
                 return null;
+            }
+        }
+    }
+
+    public static Collection<GameData> getListGames(Connection conn) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("SELECT * FROM game")) {
+            try (var resultSet = preparedStatement.executeQuery()) {
+                Collection<GameData> games = new ArrayList<>();
+                while (resultSet.next()) {
+                    games.add(new GameData(resultSet.getInt("gameID"),
+                            resultSet.getString("gameName"), resultSet.getString("whiteUsername"),
+                            resultSet.getString("blackUsername"), new Gson().fromJson(
+                                    resultSet.getString("chessGame"), ChessGame.class)));
+                }
+                if (games.isEmpty()) {
+                    return null;
+                }
+                return games;
             }
         }
     }

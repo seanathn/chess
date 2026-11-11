@@ -13,6 +13,9 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -197,5 +200,37 @@ public class sqlTests {
         assertNotNull(databaseGame);
 
         assertEquals(databaseGame, game);
+    }
+
+    @Test
+    public void testEmptyGameList() throws SQLException, DataAccessException {
+        Connection conn = DatabaseManager.getConnection();
+        DatabaseManager.clearGameData(conn);
+        Collection<GameData> empty = DatabaseManager.getListGames(conn);
+
+        assertNull(empty);
+    }
+
+    @Test
+    public void testGameList() throws SQLException, DataAccessException {
+        GameData game = new GameData(47, "dude", "where", "is", new ChessGame());
+        GameData game2 = new GameData(66, "a", "where", "d", new ChessGame());
+        GameData game4 = new GameData(55, "ad", "d", "aw", new ChessGame());
+
+        Collection<GameData> games = List.of(new GameData[]{game, game2, game4});
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertGame(conn, game);
+
+        DatabaseManager.insertGame(conn, game2);
+
+        DatabaseManager.insertGame(conn, game4);
+
+        Collection<GameData> databaseGames = DatabaseManager.getListGames(conn);
+
+        conn.close();
+
+        assertEquals(databaseGames, games);
     }
 }
