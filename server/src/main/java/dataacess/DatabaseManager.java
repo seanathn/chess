@@ -1,5 +1,6 @@
 package dataacess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -179,6 +180,22 @@ public class DatabaseManager {
             preparedStatement.setInt(2, game.gameID());
 
             preparedStatement.executeUpdate();
+        }
+    }
+
+    public static GameData findByGameID(Connection conn, int gameID) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, " +
+                "blackUsername, chessGame FROM game WHERE gameID = ?")) {
+            preparedStatement.setInt(1, gameID);
+            try (var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    return new GameData(resultSet.getInt("gameID"),
+                            resultSet.getString("gameName"), resultSet.getString("whiteUsername"),
+                            resultSet.getString("blackUsername"),
+                            new Gson().fromJson(resultSet.getString("chessGame"), ChessGame.class));
+                }
+                return null;
+            }
         }
     }
 

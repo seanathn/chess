@@ -177,8 +177,25 @@ public class sqlTests {
 
         DatabaseManager.updateTeamUsername(conn, "whiteUsername", "car", game);
 
-//        DatabaseManager.clearGameData(conn);
+        DatabaseManager.clearGameData(conn);
 
         conn.close();
+    }
+
+    @Test
+    public void testFindGameByGameID() throws SQLException, DataAccessException {
+        GameData game = new GameData(47, "dude", "where", "is", new ChessGame());
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertGame(conn, game);
+
+        GameData databaseGame = DatabaseManager.findByGameID(conn, game.gameID());
+
+        conn.close();
+
+        assertNotNull(databaseGame);
+
+        assertEquals(databaseGame, game);
     }
 }
