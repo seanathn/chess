@@ -3,10 +3,12 @@ package service;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataacess.*;
-import model.AuthData;
-import model.GameData;
-import model.JoinGameRequest;
-import model.UserData;
+import io.javalin.http.Context;
+import model.*;
+import org.eclipse.jetty.server.Authentication;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,14 +20,16 @@ public class ChessService {
     private final DataAccessUsers userAccess = new DataAccessUsers();
     private int gameIDNum = 0;
 
-    public String registerRequest(UserData input) throws DataAccessException {
+    public String registerRequest(UserData input) throws DataAccessException, SQLException {
         if (input.username() == null || input.password() == null) {
             throw new BadRequestError();
         }
         UserData user = userAccess.findUserByUsername(input.username());
 
+        String hashedPass = hashPassword(input.password());
+
         if (user == null) {
-            userAccess.addUser(input);
+            userAccess.addUser(new UserData(input.username(), hashedPass, input.email()));
 //             create authdata record and place in list
             return new Gson().toJson(createAuthData(input.username()));
         } else {
@@ -33,18 +37,18 @@ public class ChessService {
         }
     }
 
-    public void clearRequest() {
+    public void clearRequest() throws DataAccessException, SQLException {
         authAccess.clear();
         gameAccess.clear();
         userAccess.clear();
     }
 
-    public String loginRequest(UserData input) throws DataAccessException {
+    public String loginRequest(UserData input) throws DataAccessException, SQLException {
         if (input.username() == null || input.password() == null) {
             throw new BadRequestError();
         }
         UserData user = userAccess.findUserByUsername(input.username());
-        if (user != null && Objects.equals(input.password(), user.password())) {
+        if (user != null && BCrypt.checkpw(input.password(), user.password())) {
             return new Gson().toJson(createAuthData(input.username()));
         } else {
             throw new UnauthorizedException();
@@ -118,5 +122,9 @@ public class ChessService {
             throw new UnauthorizedException();
         }
         return true;
+    }
+
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 }

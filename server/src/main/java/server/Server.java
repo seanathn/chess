@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataacess.AlreadyTakenException;
 import dataacess.BadRequestError;
+import dataacess.DataAccessException;
 import dataacess.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
@@ -54,9 +55,14 @@ public class Server {
     }
 
     private void clearDB(Context ctx) {
-        chessService.clearRequest();
-        ctx.status(200);
-        ctx.json(new Gson().toJson(emptyMap()));
+        try {
+            chessService.clearRequest();
+            ctx.status(200);
+            ctx.json(new Gson().toJson(emptyMap()));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.json(new Gson().toJson(Map.of("message", e.getMessage())));
+        }
     }
 
     private void login(Context ctx) {
