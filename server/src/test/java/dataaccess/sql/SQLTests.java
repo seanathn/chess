@@ -2,7 +2,6 @@ package dataaccess.sql;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.sql.DatabaseManager;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -18,6 +17,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SQLTests {
+
+    @Test
+    public void testInitialDatabase() {
+        try {
+           new DatabaseManager();
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     public void testAddUser() throws SQLException, DataAccessException {
