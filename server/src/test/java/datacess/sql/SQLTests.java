@@ -9,8 +9,6 @@ import model.UserData;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class sqlTests {
+public class SQLTests {
 
     @Test
     public void testAddUser() throws SQLException, DataAccessException {
@@ -208,7 +206,9 @@ public class sqlTests {
         DatabaseManager.clearGameData(conn);
         Collection<GameData> empty = DatabaseManager.getListGames(conn);
 
-        assertNull(empty);
+        Collection<GameData> test = new ArrayList<>();
+
+        assertEquals(empty, test);
     }
 
     @Test

@@ -3,9 +3,7 @@ package service;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataacess.*;
-import io.javalin.http.Context;
 import model.*;
-import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;

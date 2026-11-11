@@ -4,7 +4,6 @@ import model.AuthData;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class DataAccessAuths {
 

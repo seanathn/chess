@@ -2,11 +2,8 @@ package dataacess;
 
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Objects;
 
 public class DataAccessUsers {
 
