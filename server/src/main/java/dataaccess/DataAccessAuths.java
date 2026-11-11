@@ -1,6 +1,6 @@
-package dataacess;
+package dataaccess;
 
-import dataacess.sql.DatabaseManager;
+import dataaccess.sql.DatabaseManager;
 import model.AuthData;
 
 import java.sql.Connection;

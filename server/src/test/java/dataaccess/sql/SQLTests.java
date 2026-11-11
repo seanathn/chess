@@ -1,8 +1,8 @@
-package datacess.sql;
+package dataaccess.sql;
 
 import chess.ChessGame;
-import dataacess.DataAccessException;
-import dataacess.sql.DatabaseManager;
+import dataaccess.DataAccessException;
+import dataaccess.sql.DatabaseManager;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

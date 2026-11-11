@@ -2,8 +2,8 @@ package service;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataacess.*;
-import dataacess.sql.DatabaseManager;
+import dataaccess.*;
+import dataaccess.sql.DatabaseManager;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 

@@ -1,6 +1,6 @@
-package dataacess;
+package dataaccess;
 
-import dataacess.sql.DatabaseManager;
+import dataaccess.sql.DatabaseManager;
 import model.GameData;
 
 import java.sql.Connection;

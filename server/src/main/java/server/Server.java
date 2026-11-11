@@ -1,9 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
-import dataacess.AlreadyTakenException;
-import dataacess.BadRequestError;
-import dataacess.UnauthorizedException;
+import dataaccess.AlreadyTakenException;
+import dataaccess.BadRequestError;
+import dataaccess.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.GameData;
