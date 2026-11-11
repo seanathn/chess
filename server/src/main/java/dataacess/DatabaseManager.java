@@ -23,8 +23,34 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    public DatabaseManager() throws DataAccessException {
-        createDatabase();
+    public DatabaseManager() throws DataAccessException, SQLException {
+        configureDatabase();
+    }
+
+    private final String[] createStatements = {
+            """
+                   CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL,
+                   password TEXT NOT NULL,
+                   email TEXT)
+                   """,
+            """
+                    CREATE TABLE IF NOT EXISTS auth (authToken TEXT NOT NULL, username TEXT NOT NULL)
+                    """,
+            """
+                    CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
+                    blackUsername TEXT, chessGame TEXT)
+                    """
+    };
+
+    private void configureDatabase() throws SQLException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        }
     }
 
     /**
@@ -58,32 +84,32 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
 
-            var createUserData = """
-                   CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL,
-                   password TEXT NOT NULL,
-                   email TEXT)
-                   """;
-
-            try (var createTableStatement = conn.prepareStatement(createUserData)) {
-                createTableStatement.executeUpdate();
-            }
-
-            var createAuthTable = """
-                    CREATE TABLE IF NOT EXISTS auth (authToken TEXT NOT NULL, username TEXT NOT NULL)
-                    """;
-
-            try (var createTableStatement = conn.prepareStatement(createAuthTable)) {
-                createTableStatement.executeUpdate();
-            }
-
-            var createGameTable = """
-                    CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
-                    blackUsername TEXT, chessGame TEXT)
-                    """;
-
-            try (var createTableStatement = conn.prepareStatement(createGameTable)) {
-                createTableStatement.executeUpdate();
-            }
+//            var createUserData = """
+//                   CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL,
+//                   password TEXT NOT NULL,
+//                   email TEXT)
+//                   """;
+//
+//            try (var createTableStatement = conn.prepareStatement(createUserData)) {
+//                createTableStatement.executeUpdate();
+//            }
+//
+//            var createAuthTable = """
+//                    CREATE TABLE IF NOT EXISTS auth (authToken TEXT NOT NULL, username TEXT NOT NULL)
+//                    """;
+//
+//            try (var createTableStatement = conn.prepareStatement(createAuthTable)) {
+//                createTableStatement.executeUpdate();
+//            }
+//
+//            var createGameTable = """
+//                    CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
+//                    blackUsername TEXT, chessGame TEXT)
+//                    """;
+//
+//            try (var createTableStatement = conn.prepareStatement(createGameTable)) {
+//                createTableStatement.executeUpdate();
+//            }
 
 
             return conn;
