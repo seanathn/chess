@@ -38,7 +38,7 @@ public class DatabaseManager {
                     """,
             """
                     CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
-                    blackUsername TEXT, chessGame TEXT)
+                    blackUsername TEXT, chessGame TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """
     };
 
@@ -83,34 +83,6 @@ public class DatabaseManager {
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
-
-//            var createUserData = """
-//                   CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL,
-//                   password TEXT NOT NULL,
-//                   email TEXT)
-//                   """;
-//
-//            try (var createTableStatement = conn.prepareStatement(createUserData)) {
-//                createTableStatement.executeUpdate();
-//            }
-//
-//            var createAuthTable = """
-//                    CREATE TABLE IF NOT EXISTS auth (authToken TEXT NOT NULL, username TEXT NOT NULL)
-//                    """;
-//
-//            try (var createTableStatement = conn.prepareStatement(createAuthTable)) {
-//                createTableStatement.executeUpdate();
-//            }
-//
-//            var createGameTable = """
-//                    CREATE TABLE IF NOT EXISTS game (gameID INT, gameName TEXT NOT NULL, whiteUsername TEXT,
-//                    blackUsername TEXT, chessGame TEXT)
-//                    """;
-//
-//            try (var createTableStatement = conn.prepareStatement(createGameTable)) {
-//                createTableStatement.executeUpdate();
-//            }
-
 
             return conn;
         } catch (SQLException ex) {
