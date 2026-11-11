@@ -166,4 +166,19 @@ public class sqlTests {
 
         conn.close();
     }
+
+    @Test
+    public void testSetUser() throws SQLException, DataAccessException {
+        GameData game = new GameData(47, "dude", "where", "is", new ChessGame());
+
+        Connection conn = DatabaseManager.getConnection();
+
+        DatabaseManager.insertGame(conn, game);
+
+        DatabaseManager.updateTeamUsername(conn, "whiteUsername", "car", game);
+
+//        DatabaseManager.clearGameData(conn);
+
+        conn.close();
+    }
 }

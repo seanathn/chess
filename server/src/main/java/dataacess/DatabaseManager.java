@@ -173,6 +173,15 @@ public class DatabaseManager {
         }
     }
 
+    public static void updateTeamUsername(Connection conn, String teamColor, String username, GameData game) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement("UPDATE game SET " + teamColor + "=? WHERE gameID=?")) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setInt(2, game.gameID());
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
     private static void loadPropertiesFromResources() {
         try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
             if (propStream == null) {
