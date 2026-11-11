@@ -23,6 +23,10 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    public DatabaseManager() throws DataAccessException {
+        createDatabase();
+    }
+
     /**
      * Creates the database if it does not already exist.
      */
